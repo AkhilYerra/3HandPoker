@@ -1,51 +1,32 @@
 import React from 'react';
 import { Link, Redirect } from "react-router-dom";
 import _ from 'lodash'
+import {connect} from 'react-redux'
+import {addUser, changeToHost, changeToUser,userEntered} from '../actions'
 
-export default class Home extends React.Component {
+class Home extends React.Component {
     state = {
         username: '',
         isHost: false,
         buyInAmount: 0,
-        invalidInput: true, 
         hasEnteredUserName : false
     };
-
-    handleChange = (event) => {
-        console.log(event.target.value.length);
-        if(event.target.value.length > 0 && this.state.isHost === false){
-            this.setState({invalidInput : false});
-        }else{
-            this.setState({invalidInput : true});
-        }
-        this.setState({ username: event.target.value });
-    }
-    handleAmountChange = (event) =>{
-        if(event.target.value > 0 && this.state.isHost === true){
-            this.setState({invalidInput : false});
-        }else{
-            this.setState({invalidInput : true});
-        }
-    }
     changeUserType = (event) => {
         if (event.target.value === true || _.toUpper(event.target.value) === 'TRUE') {
-            this.setState({ isHost: true });
+            this.props.dispatch(changeToHost());
         } else {
-            this.setState({ isHost: false });
+            this.props.dispatch(changeToUser());
         }
-            this.setState({invalidInput : true});
     }
 
     enteredUserName = (event) => {
-        console.log("ADJAOD")
-        this.setState({ hasEnteredUserName: true });
-        
+        this.props.dispatch(addUser(event.target.value));
+        this.props.dispatch(userEntered());        
     }
 
 
-
     render() {
-        if(this.state.hasEnteredUserName === true){
+        if(this.props.hasEnteredUserName === true){
             return <Redirect to={`waiting/username/${this.state.username}`}/>
         }
         return (
@@ -57,12 +38,18 @@ export default class Home extends React.Component {
                 </select>
                 {this.state.isHost ? <input id='buyInAmountInput' type='number' onChange={this.handleAmountChange} value={this.state.username} placeholder="5"></input>
                 : <input id='userNameInput' onChange={this.handleChange} value={this.state.username} placeholder="Akhil"></input>}
-                <button disabled={this.state.invalidInput} onClick={this.enteredUserName}>Submit</button>
+                <button onClick={this.enteredUserName}>Submit</button>
             </div>
         );
     }
 
-
-
 }
 
+function mapStateToProps(state){
+    return{
+        username: state.username, 
+        hasEnteredUserName: state.hasEnteredUserName
+    }
+}
+
+export default connect(mapStateToProps)(Home)
