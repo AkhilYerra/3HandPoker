@@ -11,6 +11,22 @@ class Home extends React.Component {
         buyInAmount: 0,
         hasEnteredUserName : false
     };
+
+    handleChange = (event) => {
+        if(event.target.value.length > 0 && this.state.isHost === false){
+            this.setState({invalidInput : false});
+        }else{
+            this.setState({invalidInput : true});
+        }
+        this.setState({ username: event.target.value });
+    }
+    handleAmountChange = (event) =>{
+        if(event.target.value > 0 && this.state.isHost === true){
+            this.setState({invalidInput : false});
+        }else{
+            this.setState({invalidInput : true});
+        }
+    }
     changeUserType = (event) => {
         if (event.target.value === true || _.toUpper(event.target.value) === 'TRUE') {
             this.props.dispatch(changeToHost());
@@ -27,7 +43,7 @@ class Home extends React.Component {
 
     render() {
         if(this.props.hasEnteredUserName === true){
-            return <Redirect to={`waiting/username/${this.state.username}`}/>
+            return <Redirect to={`waiting/${this.state.username}`}/>
         }
         return (
             <div className='RegisterScreen'>

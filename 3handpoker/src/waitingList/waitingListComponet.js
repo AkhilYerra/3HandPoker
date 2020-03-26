@@ -1,32 +1,51 @@
 import React from 'react';
+import {beginGame} from '../actions'
+import { Redirect } from "react-router-dom";
+import {connect} from 'react-redux'
 
-export default class WaitingList extends React.Component {
+class WaitingList extends React.Component {
     state = {
-        username: '',
-        hasEnteredUserName: false,
+        username: 'Akhil',
+        userNameList: ['Akhil', 'Manning', 'Lebron'],
+        isHost: false, 
+        hasGameStarted: false
     };
     
-    handleChange = (event) =>{
-        console.log(event.target.value)
-        this.setState({username: event.target.value});
-    }
-    enteredUserName = (event) =>{
-        console.log(this.state.hasEnteredUserName)
-        this.setState({hasEnteredUserName: true});
-        console.log(this.state.hasEnteredUserName)
+    enteredUserName = () => {
+        this.props.dispatch(beginGame());
     }
 
     render() {
+        if(this.props.hasGameStarted === true){
+            return <Redirect to={`/game/${this.state.username}`}/>
+        }
+        var namesList = this.state.userNameList.map(function(name){
+            return <Name key={`${name}id`} nameOfUser={name}></Name>
+        })
         return (
             <div className='RegisterScreen'>
-            <h3> We on the Waiting List</h3>
-            <input onChange={this.handleChange} value={this.state.username}></input>
-            <button onClick={this.enteredUserName}>Submit</button>
+            <h3>{this.state.isHost===true? 'Once Ready Please Start Game' : 'Please Wait For Host to Start the Game'}</h3>
+            <Name nameOfUser={namesList}></Name>
+            <button onClick={this.enteredUserName}>Start Game</button>
             </div>
         );
     }
-
     
-   
 }
 
+function mapStateToProps(state){
+    return{
+        hasGameStarted: state.hasGameStarted, 
+    }
+}
+
+export default connect(mapStateToProps)(WaitingList)
+
+
+const Name = ({ nameOfUser}) => {
+    return (
+      <div>
+          <h3>{nameOfUser}</h3>
+      </div>
+    );
+  };

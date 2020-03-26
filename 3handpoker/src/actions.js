@@ -1,3 +1,4 @@
+//Actions for Home Components
 export function addUser(userName) {
     return {
       type: 'ADD_USER',
@@ -40,6 +41,17 @@ export function isValidInput(validInputBool){
         payload:{
             userType:'User',
             isHost: false
+        }
+    }
+}
+
+
+//Actions for Welcome Components
+export function beginGame(){
+    return{
+        type:"START_GAME",
+        payload:{
+            hasGameStarted: true
         }
     }
 }

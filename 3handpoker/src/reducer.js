@@ -28,6 +28,12 @@ const initialState = {
             hasEnteredUserName: true
         })
     }
+    if(action.type === 'START_GAME'){
+        console.log("Started Game in Reducer")
+        return Object.assign({}, state,{
+            hasGameStarted: true
+        })
+    }
     return state;
   }
   
