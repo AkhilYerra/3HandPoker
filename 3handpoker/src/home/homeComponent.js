@@ -3,15 +3,22 @@ import { Link, Redirect } from "react-router-dom";
 import _ from 'lodash'
 import {connect} from 'react-redux'
 import {addUser, changeToHost, changeToUser,userEntered} from '../actions'
-
+import {addUserSuccess} from './homeActions'
+import {fetchAddedUser} from '../home/homeService'
+import Pusher from 'pusher-js';
+var pusher = new Pusher('4edf52a5d834ee8fe586', {
+    cluster: 'us2',
+    forceTLS: true
+  });
+  
 class Home extends React.Component {
     state = {
         username: '',
         isHost: false,
         buyInAmount: 0,
-        hasEnteredUserName : false
+        hasEnteredUserName : false,
+        userNameList: []
     };
-
     handleChange = (event) => {
         if(event.target.value.length > 0 && this.state.isHost === false){
             this.setState({invalidInput : false});
@@ -35,15 +42,23 @@ class Home extends React.Component {
         }
     }
 
+    testButton = (event) =>{
+        this.props.dispatch(fetchAddedUser(this.state.username, pusher));
+    }
+
     enteredUserName = (event) => {
-        this.props.dispatch(addUser(event.target.value));
-        this.props.dispatch(userEntered());        
+        this.props.dispatch(fetchAddedUser(this.state.username, pusher));
+        // this.props.dispatch(userEntered());   
     }
 
 
     render() {
         if(this.props.hasEnteredUserName === true){
-            return <Redirect to={`waiting/${this.state.username}`}/>
+            console.log(this.props.userNameList);
+            return <Redirect to={{
+                pathname: `waiting/${this.state.username}`,
+                state: { userNameList: this.props.userNameList }
+            }}/>
         }
         return (
             <div className='RegisterScreen'>
@@ -63,8 +78,11 @@ class Home extends React.Component {
 
 function mapStateToProps(state){
     return{
-        username: state.username, 
-        hasEnteredUserName: state.hasEnteredUserName
+        username: state.username,
+        hasEnteredUserName: state.hasEnteredUserName,
+        userNameList: state.userNameList,
+        isHost : state.isHost
+        
     }
 }
 
