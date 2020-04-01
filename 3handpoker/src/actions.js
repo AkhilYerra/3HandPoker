@@ -8,7 +8,7 @@ export function addUser(userName) {
     }
   }
 
-export function changeToHost(selectValue){
+export function changeToHost(){
     console.log("ACTION CALLED")
     return {
         type: 'CHANGE_TO_HOST',
@@ -18,7 +18,7 @@ export function changeToHost(selectValue){
         }
       }
 }
-export function changeToUser(selectValue){
+export function changeToUser(){
     return{
         type:"CHANGE_TO_USER",
         payload:{

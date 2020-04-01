@@ -4,12 +4,13 @@ import _ from 'lodash'
 import {connect} from 'react-redux'
 import {addUser, changeToHost, changeToUser,userEntered} from '../actions'
 import {addUserSuccess} from './homeActions'
-import {fetchAddedUser} from '../home/homeService'
+import {fetchAddedUser, fetchUserList} from '../home/homeService'
 import Pusher from 'pusher-js';
 var pusher = new Pusher('4edf52a5d834ee8fe586', {
     cluster: 'us2',
     forceTLS: true
   });
+  pusher.subscribe('3HandPoker');
   
 class Home extends React.Component {
     state = {
@@ -17,6 +18,7 @@ class Home extends React.Component {
         isHost: false,
         buyInAmount: 0,
         hasEnteredUserName : false,
+        hasEnteredHost: false,
         userNameList: []
     };
     handleChange = (event) => {
@@ -42,8 +44,8 @@ class Home extends React.Component {
         }
     }
 
-    testButton = (event) =>{
-        this.props.dispatch(fetchAddedUser(this.state.username, pusher));
+    enteredBuyInAmount = (event) =>{
+        this.props.dispatch(fetchUserList(pusher));
     }
 
     enteredUserName = (event) => {
@@ -53,11 +55,14 @@ class Home extends React.Component {
 
 
     render() {
-        if(this.props.hasEnteredUserName === true){
+        if(this.props.hasEnteredUserName === true || this.props.hasEnteredHost === true){
             console.log(this.props.userNameList);
             return <Redirect to={{
                 pathname: `waiting/${this.state.username}`,
-                state: { userNameList: this.props.userNameList }
+                state: { userNameList: this.props.userNameList,
+                    isHost: this.state.isHost, 
+                    buyInAmount: this.state.buyInAmount
+                }
             }}/>
         }
         return (
@@ -67,9 +72,11 @@ class Home extends React.Component {
                     <option value="false">Choose Your Own Name</option>
                     <option value="true">Host</option>
                 </select>
-                {this.state.isHost ? <input id='buyInAmountInput' type='number' onChange={this.handleAmountChange} value={this.state.username} placeholder="5"></input>
+                {(this.state.isHost || this.props.isHost)? <input id='buyInAmountInput' type='number' onChange={this.handleAmountChange} value={this.state.username} placeholder="5"></input>
                 : <input id='userNameInput' onChange={this.handleChange} value={this.state.username} placeholder="Akhil"></input>}
-                <button onClick={this.enteredUserName}>Submit</button>
+                {(this.state.isHost || this.props.isHost)? <button onClick={this.enteredBuyInAmount}>Submit Amount</button>
+                : <button onClick={this.enteredUserName}>Submit</button>}
+                
             </div>
         );
     }

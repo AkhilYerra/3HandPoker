@@ -1,16 +1,22 @@
-export const ADD_USER_SUCCESS = 'ADD_USER_SUCCESS';
-export const ADD_USER_ERROR = 'ADD_USER_ERROR';
+const constants = require('../common/constants')
 
 export function addUserSuccess(userName) {
     return {
-        type: ADD_USER_SUCCESS,
+        type: constants.actions.ADD_USER_SUCCESS,
         userName: userName
     }
 }
 
 export function addUserError(error) {
     return {
-        type: ADD_USER_ERROR,
+        type: constants.actions.ADD_USER_ERROR,
         error: error
+    }
+}
+
+export function getUsersSuccess(userNameList){
+    return{
+        type: constants.actions.GET_USER_SUCCESS,
+        userNameList: userNameList
     }
 }

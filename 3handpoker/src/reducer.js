@@ -1,6 +1,7 @@
-import {ADD_USER_ERROR, ADD_USER_SUCCESS} from './home/homeActions';
 import {UPDATE_USER_LIST} from './waitingList/waitingListActions'
 import {fetchAddedUser} from './home/homeService'
+const constant = require('./common/constants');
+
 const initialState = {
     isHost: false,
     userName: ''
@@ -19,19 +20,19 @@ const initialState = {
             isHost: false
           });
     }
-    if(action.type === ADD_USER_SUCCESS){
+    if(action.type === constant.actions.ADD_USER_SUCCESS){
         console.log("ADDED username in Reducer")
-        fetchAddedUser(action.userName)
-        console.log(action.userName.arrayOfUsers);
         return Object.assign({}, state,{
             userNameList: action.userName.arrayOfUsers,
             hasEnteredUserName: true
         })
     }
-    if(action.type === 'ENTERED_USERNAME'){
-        console.log("Submitted username in Reducer")
+    if(action.type === constant.actions.GET_USER_SUCCESS){
+        console.log("RETRIEVED USER LIST in Reducer")
+        console.log(action.userNameList);
         return Object.assign({}, state,{
-            hasEnteredUserName: true
+            userNameList: action.userNameList,
+            hasEnteredHost: true
         })
     }
     if(action.type === UPDATE_USER_LIST){

@@ -1,4 +1,4 @@
-import {addUserSuccess, addUserError} from './homeActions';
+import {addUserSuccess, addUserError, getUsersSuccess} from './homeActions';
 
 
 
@@ -25,8 +25,7 @@ export function fetchAddedUser(username, pusher) {
                 throw(res.error);
             }
             console.log(res);
-            var channel = pusher.subscribe('3HandPoker');
-            channel.bind('addPlayerToMongo', function(data) {
+            pusher.bind('addPlayerToMongo', function(data) {
               console.log(JSON.stringify(data));
               dispatch(addUserSuccess(data))
             });
@@ -37,4 +36,33 @@ export function fetchAddedUser(username, pusher) {
             dispatch(addUserError(error));
         })
     }
+}
+
+export function fetchUserList(pusher) {
+  return dispatch => {
+      fetch('http://localhost:4000/users', 
+      {
+          method:'GET',
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+          mode: 'no-cors' // 'cors' by default
+        }
+      )
+      .then(res => {
+          if(res.error) {
+              throw(res.error);
+          }
+          console.log(res);
+          pusher.bind('getUsersSuccess', function(data) {
+            dispatch(getUsersSuccess(data))
+          });
+          return null;
+          // return res.userName;
+      })
+      .catch(error => {
+          dispatch(addUserError(error));
+      })
+  }
 }
