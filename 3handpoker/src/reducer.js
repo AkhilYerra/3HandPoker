@@ -24,24 +24,20 @@ const initialState = {
         console.log("ADDED username in Reducer")
         return Object.assign({}, state,{
             userNameList: action.userName.arrayOfUsers,
-            hasEnteredUserName: true
+            hasEnteredUserName: true, 
+            hasGameStarted: false
         })
     }
     if(action.type === constant.actions.GET_USER_SUCCESS){
         console.log("RETRIEVED USER LIST in Reducer")
         console.log(action.userNameList);
         return Object.assign({}, state,{
-            userNameList: action.userNameList,
-            hasEnteredHost: true
+            userNameList: action.userNameList.arrayOfUsers,
+            hasEnteredHost: true,
+            hasGameStarted: false
         })
     }
-    if(action.type === UPDATE_USER_LIST){
-        console.log("Updated User List")
-        return Object.assign({}, state,{
-            userNameList: action.userName
-        })
-    }
-    if(action.type === 'START_GAME'){
+    if(action.type === constant.actions.START_GAME){
         console.log("Started Game in Reducer")
         return Object.assign({}, state,{
             hasGameStarted: true

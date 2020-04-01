@@ -1,17 +1,16 @@
 import React from 'react';
-import {beginGame} from '../actions'
+import {startGame} from './waitingListActions'
 import { Redirect } from "react-router-dom";
 import {connect} from 'react-redux'
 import _ from 'lodash'
-import {updateUserList} from '../waitingList/waitingListActions'
 import Pusher from 'pusher-js';
-
+import {fetchStartGame} from './waitingListService'
 
 var pusher = new Pusher('4edf52a5d834ee8fe586', {
   cluster: 'us2',
   forceTLS: true
 });
-
+pusher.subscribe('3HandPoker');
 
 class WaitingList extends React.Component {
     constructor(props) {
@@ -19,22 +18,50 @@ class WaitingList extends React.Component {
         console.log("AHOO")
         console.log(this.props);
         this.state.userNameList=  this.props.userNameList;
+        this.state.isHost = this.props.isHost;
+        this.state.buyInAmount = this.props.buyInAmount;
+        this.state.hasGameStarted = this.props.hasGameStarted;
     }
 
-    componentDidMount = () =>{
-        
-    }
     state = {
         isHost: false, 
         hasGameStarted: false,
-        userNameList: []
+        userNameList: [],
+        buyInAmount: 0
     };
-    enteredUserName = () => {
-        this.props.dispatch(beginGame());
+
+    componentDidMount = () =>{
+        if(this.state.isHost === false){
+            console.log("OKAY IT GOES HERE SON")
+            pusher.bind('startGame', function(data) {
+                this.setState({hasGameStarted : data.hasGameStarted});
+                console.log(data);
+              }.bind(this)
+              )
+              ;    
+        }
+
+    }
+
+    componentWillUnmount = () =>{
+        if(this.state.isHost === false){
+            console.log("OKAY IT GOES HERE SON")
+            pusher.bind('startGame', function(data) {
+                this.setState({hasGameStarted : data.hasGameStarted});
+                console.log(data);
+              }.bind(this)
+              )
+              ;    
+        }
+
+    }
+    startGameOnClick = () => {
+        this.props.dispatch(fetchStartGame(pusher));
+        console.log(this.props)
     }
 
     render() {
-        if(this.props.hasGameStarted === true){
+        if(this.props.hasGameStarted === true || this.state.hasGameStarted){
             return <Redirect to={`/game/${this.state.username}`}/>
         }
         if(!_.isUndefined(this.state.userNameList) && _.isUndefined(this.props.userNameList)){
@@ -48,10 +75,12 @@ class WaitingList extends React.Component {
             })    
         }
         return (
+            
             <div className='RegisterScreen'>
             <h3>{this.state.isHost===true? 'Once Ready Please Start Game' : 'Please Wait For Host to Start the Game'}</h3>
             <Name nameOfUser={namesList}></Name>
-            <button onClick={this.enteredUserName}>Start Game</button>
+            {console.log(this.props.isHost)}
+            {(!_.isUndefined(this.state.isHost) && this.state.isHost === true) ? <button onClick={this.startGameOnClick}>Start Game</button> : null}
             </div>
         );
     }
@@ -61,7 +90,8 @@ class WaitingList extends React.Component {
 function mapStateToProps(state){
     return{
         hasGameStarted: state.hasGameStarted, 
-        userNameList : state.userNameList
+        userNameList : state.userNameList, 
+        isHost : state.isHost
     }
 }
 

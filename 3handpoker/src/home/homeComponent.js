@@ -19,7 +19,8 @@ class Home extends React.Component {
         buyInAmount: 0,
         hasEnteredUserName : false,
         hasEnteredHost: false,
-        userNameList: []
+        userNameList: [], 
+        hasGameStarted: false
     };
     handleChange = (event) => {
         if(event.target.value.length > 0 && this.state.isHost === false){
@@ -30,11 +31,7 @@ class Home extends React.Component {
         this.setState({ username: event.target.value });
     }
     handleAmountChange = (event) =>{
-        if(event.target.value > 0 && this.state.isHost === true){
-            this.setState({invalidInput : false});
-        }else{
-            this.setState({invalidInput : true});
-        }
+        this.setState({ username: event.target.value });
     }
     changeUserType = (event) => {
         if (event.target.value === true || _.toUpper(event.target.value) === 'TRUE') {
@@ -57,11 +54,13 @@ class Home extends React.Component {
     render() {
         if(this.props.hasEnteredUserName === true || this.props.hasEnteredHost === true){
             console.log(this.props.userNameList);
+            console.log(this.props.isHost)
             return <Redirect to={{
                 pathname: `waiting/${this.state.username}`,
                 state: { userNameList: this.props.userNameList,
-                    isHost: this.state.isHost, 
-                    buyInAmount: this.state.buyInAmount
+                    isHost: this.props.isHost, 
+                    buyInAmount: this.state.buyInAmount, 
+                    hasGameStarted: false
                 }
             }}/>
         }
@@ -88,7 +87,9 @@ function mapStateToProps(state){
         username: state.username,
         hasEnteredUserName: state.hasEnteredUserName,
         userNameList: state.userNameList,
-        isHost : state.isHost
+        isHost : state.isHost,
+        hasEnteredHost: state.hasEnteredHost,
+        hasGameStarted: state.hasGameStarted
         
     }
 }

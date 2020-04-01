@@ -1,8 +1,15 @@
-export const UPDATE_USER_LIST = 'UPDATE_USER_LIST'
+const constants = require('../common/constants')
 
-export function updateUserList(listOfUsers) {
-    return {
-        type: UPDATE_USER_LIST,
-        userNameList: listOfUsers
+export function startGame(){
+    return{
+        type: constants.actions.START_GAME
     }
+}
+
+
+export function usersStartGame(){
+    return{
+        type : constants.actions.START_GAME
+    }
+
 }

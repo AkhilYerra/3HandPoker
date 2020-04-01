@@ -25,7 +25,7 @@ export function fetchAddedUser(username, pusher) {
                 throw(res.error);
             }
             console.log(res);
-            pusher.bind('addPlayerToMongo', function(data) {
+            pusher.bind('retrieveUserList', function(data) {
               console.log(JSON.stringify(data));
               dispatch(addUserSuccess(data))
             });
@@ -55,7 +55,7 @@ export function fetchUserList(pusher) {
               throw(res.error);
           }
           console.log(res);
-          pusher.bind('getUsersSuccess', function(data) {
+          pusher.bind('retrieveUserList', function(data) {
             dispatch(getUsersSuccess(data))
           });
           return null;
