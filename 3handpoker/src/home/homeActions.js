@@ -1,9 +1,10 @@
 const constants = require('../common/constants')
 
-export function addUserSuccess(userName) {
+export function addUserSuccess(userName, usersList) {
     return {
         type: constants.actions.ADD_USER_SUCCESS,
-        userName: userName
+        userName: userName,
+        usersList : usersList
     }
 }
 
@@ -14,9 +15,10 @@ export function addUserError(error) {
     }
 }
 
-export function getUsersSuccess(userNameList){
+export function getUsersSuccess(host, userNameList){
     return{
         type: constants.actions.GET_USER_SUCCESS,
-        userNameList: userNameList
+        userNameList: userNameList, 
+        username: host
     }
 }

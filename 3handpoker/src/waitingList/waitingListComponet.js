@@ -4,7 +4,7 @@ import { Redirect } from "react-router-dom";
 import {connect} from 'react-redux'
 import _ from 'lodash'
 import Pusher from 'pusher-js';
-import {fetchStartGame} from './waitingListService'
+import {fetchStartGame, populatePlayers} from './waitingListService'
 
 var pusher = new Pusher('4edf52a5d834ee8fe586', {
   cluster: 'us2',
@@ -21,13 +21,15 @@ class WaitingList extends React.Component {
         this.state.isHost = this.props.isHost;
         this.state.buyInAmount = this.props.buyInAmount;
         this.state.hasGameStarted = this.props.hasGameStarted;
+        this.state.username = this.props.username;
     }
 
     state = {
         isHost: false, 
         hasGameStarted: false,
         userNameList: [],
-        buyInAmount: 0
+        buyInAmount: 0,
+        username: ''
     };
 
     componentDidMount = () =>{
@@ -53,16 +55,39 @@ class WaitingList extends React.Component {
               )
               ;    
         }
+        pusher.unsubscribe('3HandPoker');
 
     }
     startGameOnClick = () => {
+        this.setState({
+            username:'Host'
+        })
+        console.log(this.state.username)
+            for(let i = 0; i < this.props.userNameList.length; i++){
+                
+                let samplePlayer = {
+                    playerName : this.props.userNameList[i],
+                    amount:this.state.buyInAmount,
+                }
+                this.props.dispatch(populatePlayers(samplePlayer, pusher));
+            }
+            let host = {
+                playerName : 'Host',
+                amount:this.state.buyInAmount,
+            }
+            this.props.dispatch(populatePlayers(host, pusher));
         this.props.dispatch(fetchStartGame(pusher));
-        console.log(this.props)
     }
 
     render() {
         if(this.props.hasGameStarted === true || this.state.hasGameStarted){
-            return <Redirect to={`/game/${this.state.username}`}/>
+            return <Redirect to={{
+                pathname: `/game/${this.state.username}`,
+                state: { username: this.state.username,
+                    isHost: this.props.isHost, 
+                    userNameList : this.props.userNameList
+                }
+            }}/>
         }
         if(!_.isUndefined(this.state.userNameList) && _.isUndefined(this.props.userNameList)){
             var namesList = this.state.userNameList.map(function(name){
@@ -91,7 +116,8 @@ function mapStateToProps(state){
     return{
         hasGameStarted: state.hasGameStarted, 
         userNameList : state.userNameList, 
-        isHost : state.isHost
+        isHost : state.isHost,
+        username : state.username
     }
 }
 

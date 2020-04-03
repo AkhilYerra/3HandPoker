@@ -23,24 +23,39 @@ const initialState = {
     if(action.type === constant.actions.ADD_USER_SUCCESS){
         console.log("ADDED username in Reducer")
         return Object.assign({}, state,{
-            userNameList: action.userName.arrayOfUsers,
+            userNameList: action.usersList.arrayOfUsers,
             hasEnteredUserName: true, 
-            hasGameStarted: false
+            hasGameStarted: false, 
+            username: action.userName
         })
     }
     if(action.type === constant.actions.GET_USER_SUCCESS){
         console.log("RETRIEVED USER LIST in Reducer")
-        console.log(action.userNameList);
         return Object.assign({}, state,{
             userNameList: action.userNameList.arrayOfUsers,
             hasEnteredHost: true,
-            hasGameStarted: false
+            hasGameStarted: false,
+            username: action.username
         })
     }
     if(action.type === constant.actions.START_GAME){
         console.log("Started Game in Reducer")
         return Object.assign({}, state,{
             hasGameStarted: true
+        })
+    }
+    if(action.type === constant.actions.GET_ALL_PLAYERS){
+        console.log("Got All Players in Reducer");
+        let user = action.payload.username
+        let listOfPlayers = action.payload.listOfAllPlayers.AllPlayers;
+        let userInfo = listOfPlayers[user];
+        delete listOfPlayers[user];
+        console.log(listOfPlayers);
+        return Object.assign({}, state,{
+            isHost: action.payload.isHost,
+            username : action.payload.username,
+            otherPlayerList : listOfPlayers,
+            userInfo: userInfo
         })
     }
     return state;

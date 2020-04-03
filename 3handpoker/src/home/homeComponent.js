@@ -42,14 +42,16 @@ class Home extends React.Component {
     }
 
     enteredBuyInAmount = (event) =>{
-        this.props.dispatch(fetchUserList(pusher));
+        this.props.dispatch(fetchUserList('Host', pusher));
     }
 
     enteredUserName = (event) => {
         this.props.dispatch(fetchAddedUser(this.state.username, pusher));
         // this.props.dispatch(userEntered());   
     }
-
+    componentWillUnmount = () =>{
+        pusher.unsubscribe('3HandPoker');
+    }
 
     render() {
         if(this.props.hasEnteredUserName === true || this.props.hasEnteredHost === true){
@@ -60,7 +62,8 @@ class Home extends React.Component {
                 state: { userNameList: this.props.userNameList,
                     isHost: this.props.isHost, 
                     buyInAmount: this.state.buyInAmount, 
-                    hasGameStarted: false
+                    hasGameStarted: false,
+                    username: this.props.username
                 }
             }}/>
         }

@@ -27,7 +27,7 @@ export function fetchAddedUser(username, pusher) {
             console.log(res);
             pusher.bind('retrieveUserList', function(data) {
               console.log(JSON.stringify(data));
-              dispatch(addUserSuccess(data))
+              dispatch(addUserSuccess(username, data))
             });
             return null;
             // return res.userName;
@@ -38,7 +38,7 @@ export function fetchAddedUser(username, pusher) {
     }
 }
 
-export function fetchUserList(pusher) {
+export function fetchUserList(username, pusher) {
   return dispatch => {
       fetch('http://localhost:4000/users', 
       {
@@ -56,7 +56,7 @@ export function fetchUserList(pusher) {
           }
           console.log(res);
           pusher.bind('retrieveUserList', function(data) {
-            dispatch(getUsersSuccess(data))
+            dispatch(getUsersSuccess(username, data))
           });
           return null;
           // return res.userName;
