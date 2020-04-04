@@ -22,8 +22,9 @@ const initialState = {
     }
     if(action.type === constant.actions.ADD_USER_SUCCESS){
         console.log("ADDED username in Reducer")
+        console.log(action.userNameList.arrayOfUsers);
         return Object.assign({}, state,{
-            userNameList: action.usersList.arrayOfUsers,
+            userNameList: action.userNameList.arrayOfUsers,
             hasEnteredUserName: true, 
             hasGameStarted: false, 
             username: action.userName
@@ -31,11 +32,12 @@ const initialState = {
     }
     if(action.type === constant.actions.GET_USER_SUCCESS){
         console.log("RETRIEVED USER LIST in Reducer")
+        console.log(action.userNameList.arrayOfUsers);
         return Object.assign({}, state,{
             userNameList: action.userNameList.arrayOfUsers,
             hasEnteredHost: true,
             hasGameStarted: false,
-            username: action.username
+            username: action.userName
         })
     }
     if(action.type === constant.actions.START_GAME){
@@ -50,7 +52,6 @@ const initialState = {
         let listOfPlayers = action.payload.listOfAllPlayers.AllPlayers;
         let userInfo = listOfPlayers[user];
         delete listOfPlayers[user];
-        console.log(listOfPlayers);
         return Object.assign({}, state,{
             isHost: action.payload.isHost,
             username : action.payload.username,

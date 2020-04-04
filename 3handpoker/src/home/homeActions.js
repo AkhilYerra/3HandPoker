@@ -4,7 +4,7 @@ export function addUserSuccess(userName, usersList) {
     return {
         type: constants.actions.ADD_USER_SUCCESS,
         userName: userName,
-        usersList : usersList
+        userNameList : usersList
     }
 }
 
@@ -19,6 +19,6 @@ export function getUsersSuccess(host, userNameList){
     return{
         type: constants.actions.GET_USER_SUCCESS,
         userNameList: userNameList, 
-        username: host
+        userName: host
     }
 }

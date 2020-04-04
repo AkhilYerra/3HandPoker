@@ -19,7 +19,6 @@ class Home extends React.Component {
         buyInAmount: 0,
         hasEnteredUserName : false,
         hasEnteredHost: false,
-        userNameList: [], 
         hasGameStarted: false
     };
     handleChange = (event) => {
@@ -42,6 +41,7 @@ class Home extends React.Component {
     }
 
     enteredBuyInAmount = (event) =>{
+        // this.props.dispatch(fetchAddedUser('Host', pusher));
         this.props.dispatch(fetchUserList('Host', pusher));
     }
 
@@ -49,17 +49,12 @@ class Home extends React.Component {
         this.props.dispatch(fetchAddedUser(this.state.username, pusher));
         // this.props.dispatch(userEntered());   
     }
-    componentWillUnmount = () =>{
-        pusher.unsubscribe('3HandPoker');
-    }
 
     render() {
         if(this.props.hasEnteredUserName === true || this.props.hasEnteredHost === true){
-            console.log(this.props.userNameList);
-            console.log(this.props.isHost)
             return <Redirect to={{
                 pathname: `waiting/${this.state.username}`,
-                state: { userNameList: this.props.userNameList,
+                state: {
                     isHost: this.props.isHost, 
                     buyInAmount: this.state.buyInAmount, 
                     hasGameStarted: false,
@@ -89,7 +84,6 @@ function mapStateToProps(state){
     return{
         username: state.username,
         hasEnteredUserName: state.hasEnteredUserName,
-        userNameList: state.userNameList,
         isHost : state.isHost,
         hasEnteredHost: state.hasEnteredHost,
         hasGameStarted: state.hasGameStarted

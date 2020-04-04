@@ -28,17 +28,18 @@ export function fetchAllPlayers(isHost, username, pusher) {
   }
 }
 
-export function shuffle(isHost, username, pusher) {
+export function shuffle(isHost, username, userNameList, pusher) {
   return dispatch => {
       fetch('http://localhost:4000/shuffle', 
       {
-          method:'PUT',
-          headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-          mode: 'no-cors' // 'cors' by default
-        }
+        method:'PUT',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userNameList),
+        mode: 'no-cors' // 'cors' by default
+      }
       )
       .then(res => {
           if(res.error) {

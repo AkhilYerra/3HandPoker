@@ -17,7 +17,6 @@ class WaitingList extends React.Component {
         super(props);
         console.log("AHOO")
         console.log(this.props);
-        this.state.userNameList=  this.props.userNameList;
         this.state.isHost = this.props.isHost;
         this.state.buyInAmount = this.props.buyInAmount;
         this.state.hasGameStarted = this.props.hasGameStarted;
@@ -59,10 +58,7 @@ class WaitingList extends React.Component {
 
     }
     startGameOnClick = () => {
-        this.setState({
-            username:'Host'
-        })
-        console.log(this.state.username)
+        console.log(this.props.userNameList)
             for(let i = 0; i < this.props.userNameList.length; i++){
                 
                 let samplePlayer = {
@@ -85,7 +81,6 @@ class WaitingList extends React.Component {
                 pathname: `/game/${this.state.username}`,
                 state: { username: this.state.username,
                     isHost: this.props.isHost, 
-                    userNameList : this.props.userNameList
                 }
             }}/>
         }
