@@ -49,9 +49,13 @@ const initialState = {
     if(action.type === constant.actions.GET_ALL_PLAYERS){
         console.log("Got All Players in Reducer");
         let user = action.payload.username
+        console.log(user);
         let listOfPlayers = action.payload.listOfAllPlayers.AllPlayers;
+        console.log(listOfPlayers);
         let userInfo = listOfPlayers[user];
+        console.log(userInfo);
         delete listOfPlayers[user];
+        console.log(listOfPlayers)
         return Object.assign({}, state,{
             isHost: action.payload.isHost,
             username : action.payload.username,

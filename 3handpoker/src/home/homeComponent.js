@@ -19,7 +19,8 @@ class Home extends React.Component {
         buyInAmount: 0,
         hasEnteredUserName : false,
         hasEnteredHost: false,
-        hasGameStarted: false
+        hasGameStarted: false, 
+        userNameList : []
     };
     handleChange = (event) => {
         if(event.target.value.length > 0 && this.state.isHost === false){
@@ -58,7 +59,8 @@ class Home extends React.Component {
                     isHost: this.props.isHost, 
                     buyInAmount: this.state.buyInAmount, 
                     hasGameStarted: false,
-                    username: this.props.username
+                    username: this.props.username, 
+                    userNameList : this.props.userNameList
                 }
             }}/>
         }
@@ -86,8 +88,8 @@ function mapStateToProps(state){
         hasEnteredUserName: state.hasEnteredUserName,
         isHost : state.isHost,
         hasEnteredHost: state.hasEnteredHost,
-        hasGameStarted: state.hasGameStarted
-        
+        hasGameStarted: state.hasGameStarted,
+        userNameList : state.userNameList
     }
 }
 

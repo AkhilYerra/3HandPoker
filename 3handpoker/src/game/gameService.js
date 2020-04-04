@@ -17,6 +17,7 @@ export function fetchAllPlayers(isHost, username, pusher) {
               throw(res.error);
           }
           pusher.bind('getAllPlayers', function(data) {
+            console.log(data);
             dispatch(getAllPlayers(isHost, username, data))
           });
           return null;

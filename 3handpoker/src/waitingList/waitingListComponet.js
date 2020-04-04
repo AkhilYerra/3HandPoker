@@ -44,19 +44,6 @@ class WaitingList extends React.Component {
 
     }
 
-    componentWillUnmount = () =>{
-        if(this.state.isHost === false){
-            console.log("OKAY IT GOES HERE SON")
-            pusher.bind('startGame', function(data) {
-                this.setState({hasGameStarted : data.hasGameStarted});
-                console.log(data);
-              }.bind(this)
-              )
-              ;    
-        }
-        pusher.unsubscribe('3HandPoker');
-
-    }
     startGameOnClick = () => {
         console.log(this.props.userNameList)
             for(let i = 0; i < this.props.userNameList.length; i++){

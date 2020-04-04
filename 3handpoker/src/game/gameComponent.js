@@ -39,8 +39,14 @@ class Game extends React.Component {
         if(!_.isUndefined(this.props.otherPlayerList) && !_.isUndefined(this.state.userNameList)){
             let arrayOfUsers = [];
             for(let i =0; i < this.state.userNameList.length; i++){
-                arrayOfUsers.push(this.props.otherPlayerList[this.state.userNameList[i]]);
+                if(!_.isUndefined(this.props.otherPlayerList[this.state.userNameList[i]])){
+                    arrayOfUsers.push(this.props.otherPlayerList[this.state.userNameList[i]]);
+                }
             }
+            if(this.props.isHost === false){
+                arrayOfUsers.push(this.props.otherPlayerList.Host);
+            }
+            console.log(arrayOfUsers)
             var otherPlayer = arrayOfUsers.map(function (otherUserObject) {
                     return <OtherUser key={`${otherUserObject.name}`} name={otherUserObject.name} hasSeen={otherUserObject.hasSeen} hasFolded={otherUserObject.hasFolded}></OtherUser>
             })    
