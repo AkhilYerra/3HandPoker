@@ -16,7 +16,7 @@ class Home extends React.Component {
     state = {
         username: '',
         isHost: false,
-        buyInAmount: 0,
+        buyInAmount: 15.0,
         hasEnteredUserName : false,
         hasEnteredHost: false,
         hasGameStarted: false, 
@@ -42,8 +42,10 @@ class Home extends React.Component {
     }
 
     enteredBuyInAmount = (event) =>{
+        console.log(event.target.value)
         this.props.dispatch(fetchAddedUser('Admin', pusher));
-        this.props.dispatch(fetchUserList('Admin', pusher));
+        this.setState({buyInAmount : 15.0})
+        this.props.dispatch(fetchUserList('Admin', pusher, 15.0));
     }
 
     enteredUserName = (event) => {
@@ -89,7 +91,8 @@ function mapStateToProps(state){
         isHost : state.isHost,
         hasEnteredHost: state.hasEnteredHost,
         hasGameStarted: state.hasGameStarted,
-        userNameList : state.userNameList
+        userNameList : state.userNameList, 
+        buyInAmount: state.buyInAmount
     }
 }
 

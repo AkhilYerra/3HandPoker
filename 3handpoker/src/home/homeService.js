@@ -36,7 +36,7 @@ export function fetchAddedUser(username, pusher) {
     }
 }
 
-export function fetchUserList(username, pusher) {
+export function fetchUserList(username, pusher, buyInAmount) {
   return dispatch => {
       fetch('http://localhost:4000/users', 
       {
@@ -52,8 +52,9 @@ export function fetchUserList(username, pusher) {
           if(res.error) {
               throw(res.error);
           }
+          console.log(buyInAmount)
           pusher.bind('retrieveUserList', function(data) {
-            dispatch(getUsersSuccess(username, data))
+            dispatch(getUsersSuccess(username, data, buyInAmount))
           });
           return null;
           // return res.userName;

@@ -31,12 +31,13 @@ const initialState = {
     }
     if(action.type === constant.actions.GET_USER_SUCCESS){
         console.log("RETRIEVED USER LIST in Reducer")
-        console.log(action.userNameList.arrayOfUsers);
+        console.log(action.buyInAmount);
         return Object.assign({}, state,{
             userNameList: action.userNameList.arrayOfUsers,
             hasEnteredHost: true,
             hasGameStarted: false,
-            username: action.userName
+            username: action.userName,
+            buyInAmount : action.buyInAmount
         })
     }
     if(action.type === constant.actions.START_GAME){
@@ -50,7 +51,7 @@ const initialState = {
         console.log(action.payload);
         let user = action.payload.username
         console.log(user);
-        let listOfPlayers = action.payload.listOfAllPlayers.AllPlayers;
+        let listOfPlayers = Object.assign({}, action.payload.listOfAllPlayers.AllPlayers);
         console.log(listOfPlayers);
         let userInfo = listOfPlayers[user];
         console.log(userInfo);
@@ -61,6 +62,23 @@ const initialState = {
             username : action.payload.username,
             otherPlayerList : listOfPlayers,
             userInfo: userInfo
+        })
+    }
+    if(action.type === constant.actions.CHANGE_TO_SEEN){
+        return Object.assign({}, state,{
+            userSeen : action.hasSeen,
+        })
+    }
+    if(action.type === constant.actions.CHANGE_TO_FOLDED){
+        return Object.assign({}, state,{
+            userFolded : action.userFolded,
+        })
+    }
+    if(action.type === constant.actions.CHANGE_BET_AMOUNT){
+        let amountLeft = action.userAmount - (action.amountBet*0.25)
+        console.log(amountLeft)
+        return Object.assign({}, state,{
+            userAmount : amountLeft,
         })
     }
     return state;

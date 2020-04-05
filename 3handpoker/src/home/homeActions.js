@@ -15,10 +15,11 @@ export function addUserError(error) {
     }
 }
 
-export function getUsersSuccess(host, userNameList){
+export function getUsersSuccess(host, userNameList, buyInAmount){
     return{
         type: constants.actions.GET_USER_SUCCESS,
         userNameList: userNameList, 
-        userName: host
+        userName: host,
+        buyInAmount: buyInAmount
     }
 }

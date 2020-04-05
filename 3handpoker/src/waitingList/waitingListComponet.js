@@ -44,10 +44,11 @@ class WaitingList extends React.Component {
 
     startGameOnClick = () => {
             for(let i = 0; i < this.props.userNameList.length; i++){
-                
+                console.log(this.state.buyInAmount)
+                //TODO:Change this from 15 to a dynamic value
                 let samplePlayer = {
                     playerName : this.props.userNameList[i],
-                    amount:this.state.buyInAmount,
+                    amount:15.00,
                 }
                 this.props.dispatch(populatePlayers(samplePlayer, pusher));
             }
