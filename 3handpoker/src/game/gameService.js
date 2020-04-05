@@ -68,6 +68,9 @@ export function fetchMakeMove(username, userSeen, userFolded, counterBet, amount
     amount:(counterBet*0.25),
     userAmount:Number(amount)
   }
+  if(body.hasFolded === true){
+    body.amount = 0;
+  }
   console.log(body);
   return dispatch => {
       fetch('http://localhost:4000/makeMove', 

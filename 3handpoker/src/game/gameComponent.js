@@ -50,7 +50,7 @@ class Game extends React.Component {
         console.log(this.props.userSeen)
     }
     foldForGame = async () =>{
-        await this.props.dispatch(hasFoldedRound());
+        await this.props.dispatch(fetchMakeMove(this.state.username, this.props.userSeen, true, this.state.counterBet, this.props.userInfo.amount['$numberDecimal'], this.props.isHost, pusher));
         console.log(this.props.userFolded)
     }
     makeMove = async () =>{
@@ -119,7 +119,7 @@ class Game extends React.Component {
                 {this.state.counterBet}
                 <button onClick={this.increment}>+</button>
                 <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn)} onClick={this.makeMove}>Bet</button>
-                <button onClick={this.foldForGame}>Fold</button>
+                <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn)} onClick={this.foldForGame}>Fold</button>
             </div>
         );
     }
