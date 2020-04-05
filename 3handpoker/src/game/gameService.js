@@ -33,7 +33,7 @@ export function shuffle(isHost, username, userNameList, pusher) {
   return dispatch => {
       fetch('http://localhost:4000/shuffle', 
       {
-        method:'PUT',
+        method:'POST',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -45,10 +45,13 @@ export function shuffle(isHost, username, userNameList, pusher) {
       .then(res => {
           if(res.error) {
               throw(res.error);
-          }pusher.bind('getAllPlayers', function(data) {
+          }
+          console.log(`The Shuffle has been called`)
+          pusher.bind('getAllPlayers', function(data) {
+            console.log(data);
             dispatch(getAllPlayers(isHost, username, data))
           });
-          return null;
+          return '';
       })
       .catch(error => {
       })

@@ -42,8 +42,8 @@ class Home extends React.Component {
     }
 
     enteredBuyInAmount = (event) =>{
-        // this.props.dispatch(fetchAddedUser('Host', pusher));
-        this.props.dispatch(fetchUserList('Host', pusher));
+        this.props.dispatch(fetchAddedUser('Admin', pusher));
+        this.props.dispatch(fetchUserList('Admin', pusher));
     }
 
     enteredUserName = (event) => {

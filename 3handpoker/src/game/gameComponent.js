@@ -28,11 +28,13 @@ class Game extends React.Component {
         otherPlayerList: {},
         userNameList : []
     };
-    componentDidMount = () => {
-        this.props.dispatch(fetchAllPlayers(this.state.isHost, this.state.username, pusher));
+    componentDidMount = async () => {
+        // await this.props.dispatch(fetchAllPlayers(this.state.isHost, this.state.username, pusher));
         if(this.props.isHost === true){
-            this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
+            console.log(this.state.userNameList)
+            await this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
         }
+        
     }
 
     render() {
@@ -43,22 +45,28 @@ class Game extends React.Component {
                     arrayOfUsers.push(this.props.otherPlayerList[this.state.userNameList[i]]);
                 }
             }
-            if(this.props.isHost === false){
-                arrayOfUsers.push(this.props.otherPlayerList.Host);
-            }
+            // if(this.props.isHost === false){
+            //     arrayOfUsers.push(this.props.otherPlayerList.Host);
+            // }
             console.log(arrayOfUsers)
             var otherPlayer = arrayOfUsers.map(function (otherUserObject) {
                     return <OtherUser key={`${otherUserObject.name}`} name={otherUserObject.name} hasSeen={otherUserObject.hasSeen} hasFolded={otherUserObject.hasFolded}></OtherUser>
-            })    
+            })
+                  
+        }
+        console.log(this.props.userInfo)
+        if(!_.isUndefined(this.props.userInfo)){
+            var cardsOfPlayer = this.props.userInfo.cards.map(function(card){
+                return <Card key={`${card.suite}${card.value}`} suite={card.suite} value={card.value}></Card>
+            })      
         }
         return (
             <div className='Game Screen'>
                 <h2>POKER ROOM</h2>
                 {otherPlayer}
-                {}
                 {(!_.isUndefined(this.props.userInfo))?
             <Player key={`${this.props.userInfo.name}`} name={this.props.userInfo.name} hasSeen={this.props.userInfo.hasSeen} hasFolded={this.props.userInfo.hasFolded}></Player>:null}
-                {/* {cardsInHand} */}
+                {cardsOfPlayer}
                 <button>See Cards</button>
                 <button>Bet</button>
                 <button>Fold</button>
@@ -102,10 +110,10 @@ const Player = ({ name, hasSeen, hasFolded }) => {
         </div>
     );
 };
-const Card = ({ suite, number }) => {
+const Card = ({ suite, value }) => {
     return (
         <div>
-            <h6>{suite} - {number}</h6>
+            <h6>{suite} - {value}</h6>
         </div>
     );
 };

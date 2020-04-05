@@ -15,8 +15,8 @@ pusher.subscribe('3HandPoker');
 class WaitingList extends React.Component {
     constructor(props) {
         super(props);
-        console.log("AHOO")
-        console.log(this.props);
+        // console.log("AHOO")
+        // console.log(this.props);
         this.state.isHost = this.props.isHost;
         this.state.buyInAmount = this.props.buyInAmount;
         this.state.hasGameStarted = this.props.hasGameStarted;
@@ -33,10 +33,8 @@ class WaitingList extends React.Component {
 
     componentDidMount = () =>{
         if(this.state.isHost === false){
-            console.log("OKAY IT GOES HERE SON")
             pusher.bind('startGame', function(data) {
                 this.setState({hasGameStarted : data.hasGameStarted});
-                console.log(data);
               }.bind(this)
               )
               ;    
@@ -45,7 +43,6 @@ class WaitingList extends React.Component {
     }
 
     startGameOnClick = () => {
-        console.log(this.props.userNameList)
             for(let i = 0; i < this.props.userNameList.length; i++){
                 
                 let samplePlayer = {
@@ -54,11 +51,6 @@ class WaitingList extends React.Component {
                 }
                 this.props.dispatch(populatePlayers(samplePlayer, pusher));
             }
-            let host = {
-                playerName : 'Host',
-                amount:this.state.buyInAmount,
-            }
-            this.props.dispatch(populatePlayers(host, pusher));
         this.props.dispatch(fetchStartGame(pusher));
     }
 
@@ -86,7 +78,6 @@ class WaitingList extends React.Component {
             <div className='RegisterScreen'>
             <h3>{this.state.isHost===true? 'Once Ready Please Start Game' : 'Please Wait For Host to Start the Game'}</h3>
             <Name nameOfUser={namesList}></Name>
-            {console.log(this.props.isHost)}
             {(!_.isUndefined(this.state.isHost) && this.state.isHost === true) ? <button onClick={this.startGameOnClick}>Start Game</button> : null}
             </div>
         );

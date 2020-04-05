@@ -22,7 +22,6 @@ const initialState = {
     }
     if(action.type === constant.actions.ADD_USER_SUCCESS){
         console.log("ADDED username in Reducer")
-        console.log(action.userNameList.arrayOfUsers);
         return Object.assign({}, state,{
             userNameList: action.userNameList.arrayOfUsers,
             hasEnteredUserName: true, 
@@ -48,6 +47,7 @@ const initialState = {
     }
     if(action.type === constant.actions.GET_ALL_PLAYERS){
         console.log("Got All Players in Reducer");
+        console.log(action.payload);
         let user = action.payload.username
         console.log(user);
         let listOfPlayers = action.payload.listOfAllPlayers.AllPlayers;

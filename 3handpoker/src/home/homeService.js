@@ -24,9 +24,7 @@ export function fetchAddedUser(username, pusher) {
             if(res.error) {
                 throw(res.error);
             }
-            console.log(res);
             pusher.bind('retrieveUserList', function(data) {
-              console.log(JSON.stringify(data));
               dispatch(addUserSuccess(username, data))
             });
             return null;
@@ -54,7 +52,6 @@ export function fetchUserList(username, pusher) {
           if(res.error) {
               throw(res.error);
           }
-          console.log(res);
           pusher.bind('retrieveUserList', function(data) {
             dispatch(getUsersSuccess(username, data))
           });

@@ -9,11 +9,10 @@ export function addUser(userName) {
   }
 
 export function changeToHost(){
-    console.log("ACTION CALLED")
     return {
         type: 'CHANGE_TO_HOST',
         payload: {
-          userType: 'Host',
+          userType: 'Admin',
           isHost: true
         }
       }
