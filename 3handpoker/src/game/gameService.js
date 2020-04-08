@@ -1,4 +1,4 @@
-import {getAllPlayers} from './gameActions'
+import {getAllPlayers, updateGameStatus, payPlayer} from './gameActions'
 import _ from 'lodash'
 
 export function fetchAllPlayers(isHost, username, pusher) {
@@ -52,6 +52,10 @@ export function shuffle(isHost, username, userNameList, pusher) {
             console.log(data);
             dispatch(getAllPlayers(isHost, username, data))
           });
+          pusher.bind('retrieveGameState', function(data) {
+            console.log(data);
+            dispatch(updateGameStatus(data))
+          });
           return '';
       })
       .catch(error => {
@@ -93,9 +97,40 @@ export function fetchMakeMove(username, userSeen, userFolded, counterBet, amount
             console.log(data);
             dispatch(getAllPlayers(isHost, username, data))
           });
+          pusher.bind('retrieveGameState', function(data) {
+            console.log(data);
+            dispatch(updateGameStatus(data))
+          });
           return '';
       })
       .catch(error => {
       })
   }
+}
+
+export function payWinner(username, potAmount){
+  let sampleBody = {
+    username:username,
+    potAmount:potAmount
+  }
+    fetch('http://localhost:4000/payWinner', 
+    {
+      method:'POST',
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(sampleBody),
+      mode: 'no-cors' // 'cors' by default
+    }
+    )
+    .then(res => {
+        if(res.error) {
+            throw(res.error);
+        }
+        // dispatch(payPlayer(username, potAmount))
+        return '';
+    })
+    .catch(error => {
+    })
 }

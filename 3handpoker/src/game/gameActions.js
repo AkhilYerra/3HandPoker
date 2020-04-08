@@ -11,10 +11,10 @@ export function getAllPlayers(isHost, username, data){
     }
 }
 
-export function hasSeenCards(){
+export function hasSeenCards(hasSeenStatus){
     return {
         type: constants.actions.CHANGE_TO_SEEN,
-        hasSeen:true
+        hasSeen:hasSeenStatus
       }
 }
 
@@ -31,4 +31,17 @@ export function hasBet(amountBet, userAmount){
         amountBet:amountBet,
         userAmount : userAmount
       }
+}
+
+export function updateGameStatus(gameStatus){
+    return{
+        type: constants.actions.UPDATE_GAME_STATUS,
+        gameStatus: gameStatus
+    }
+}
+
+export function payPlayer(username, potAmount){
+    return{
+        type: constants.actions.PAY_WINNER
+    }
 }

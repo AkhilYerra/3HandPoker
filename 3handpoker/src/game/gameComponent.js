@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect } from "react-router-dom";
 import { connect } from 'react-redux'
 import {hasSeenCards, hasFoldedRound, hasBet} from './gameActions'
-import { fetchAllPlayers, shuffle, fetchMakeMove} from './gameService'
+import { fetchAllPlayers, shuffle, fetchMakeMove, payWinner} from './gameService'
 import Pusher from 'pusher-js';
 import _ from 'lodash'
 
@@ -33,6 +33,10 @@ class Game extends React.Component {
         userAmount: 0.0, 
         betForRound:0.0 ,
         counterBet : 1,
+        gameStatus: {},
+        potAmount: 0.00,
+        hasWon:false,
+        twoPeopleLeft:false
 
     };
     componentDidMount = async () => {
@@ -46,7 +50,7 @@ class Game extends React.Component {
         
     }
     viewCards = async () =>{
-        await this.props.dispatch(hasSeenCards());
+        await this.props.dispatch(hasSeenCards(true));
         console.log(this.props.userSeen)
     }
     foldForGame = async () =>{
@@ -58,6 +62,7 @@ class Game extends React.Component {
     }
 
     decrement = () =>{
+        console.log(this.props.gameStatus)
         if(this.state.counterBet === 1){
 
         }else if(this.state.counterBet === 2){
@@ -78,6 +83,30 @@ class Game extends React.Component {
             this.setState({counterBet : 8})
         }else if(this.state.counterBet === 8){
             
+        }
+    }
+    
+    shuffle = async() =>{
+        this.setState({hasWon:false});
+        this.setState({twoPeopleLeft:false});
+        await this.props.dispatch(hasSeenCards(false));
+        await this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
+    }
+
+    show = async() =>{
+        console.log("SHOWING")
+    }
+    componentDidUpdate = async()=>{
+        console.log(this.state.hasWon);
+        if(!_.isUndefined(this.props.gameStatus)){
+            if(this.props.gameStatus.playersRemaining == 1 && this.props.gameStatus.playersInRound[0] === this.state.username && this.state.hasWon === false){
+                console.log("WE HAVE A WINNER");
+                this.setState({hasWon:true});
+                await payWinner(this.state.username, this.props.potAmount);
+                setTimeout(function () {
+                    this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
+                }.bind(this), 5000);
+            }    
         }
     }
 
@@ -104,7 +133,8 @@ class Game extends React.Component {
         }
         return (
             <div className='Game Screen'>
-                <h2>POKER ROOM</h2>
+                <h6>Pot : </h6>{(!_.isUndefined(this.props.potAmount))?this.props.potAmount:null}
+        {(!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 1) ?<h6>{this.props.gameStatus.playersInRound[0]} has Won!</h6> :null}
                 {otherPlayer}
                 {(!_.isUndefined(this.props.userInfo))?
             <Player key={`${this.props.userInfo.name}`} name={this.props.userInfo.name} hasSeen={this.props.userInfo.hasSeen} hasFolded={this.props.userInfo.hasFolded} amount={this.props.userInfo.amount['$numberDecimal']}></Player>:null}
@@ -120,6 +150,10 @@ class Game extends React.Component {
                 <button onClick={this.increment}>+</button>
                 <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn)} onClick={this.makeMove}>Bet</button>
                 <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn)} onClick={this.foldForGame}>Fold</button>
+                {(!_.isUndefined(this.props.isHost) && this.props.isHost === true)?
+            <button onClick={this.shuffle}>Shuffle</button>:null}
+            {(!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 2 && this.props.gameStatus.playersInRound.includes(this.state.username) && this.state.hasWon === false)?
+            <button onClick={this.show}>Show</button>:null}
             </div>
         );
     }
@@ -135,7 +169,9 @@ function mapStateToProps(state) {
         userNameList : state.userNameList,
         userSeen: state.userSeen, 
         userFolded: state.userFolded, 
-        userAmount: state.userAmount
+        userAmount: state.userAmount,
+        gameStatus: state.gameStatus,
+        potAmount: state.potAmount
     }
 }
 

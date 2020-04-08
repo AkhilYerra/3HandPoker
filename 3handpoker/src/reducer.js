@@ -81,6 +81,18 @@ const initialState = {
             userAmount : amountLeft,
         })
     }
+    if(action.type === constant.actions.UPDATE_GAME_STATUS){
+        console.log("UPDATING GAME AND ALL THAT")
+        console.log(Number(action.gameStatus.pot['$numberDecimal']))
+        return Object.assign({}, state,{
+            gameStatus : action.gameStatus,
+            potAmount: Number(action.gameStatus.pot['$numberDecimal'])
+        })
+    }
+    if(action.type === constant.actions.PAY_WINNER){
+        console.log("PAYING PLAYER");
+        return;
+    }
     return state;
   }
   
