@@ -45,3 +45,11 @@ export function payPlayer(username, potAmount){
         type: constants.actions.PAY_WINNER
     }
 }
+
+export function getWinner(data){
+    return{
+        type: constants.actions.GET_WINNER,
+        winnerData: data
+    }
+}
+

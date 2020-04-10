@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect } from "react-router-dom";
 import { connect } from 'react-redux'
 import {hasSeenCards, hasFoldedRound, hasBet} from './gameActions'
-import { fetchAllPlayers, shuffle, fetchMakeMove, payWinner} from './gameService'
+import { fetchAllPlayers, shuffle, fetchMakeMove, payWinner, determineWinner, getAllPusher} from './gameService'
 import Pusher from 'pusher-js';
 import _ from 'lodash'
 
@@ -36,10 +36,12 @@ class Game extends React.Component {
         gameStatus: {},
         potAmount: 0.00,
         hasWon:false,
-        twoPeopleLeft:false
+        twoPeopleLeft:false,
+        winnerDetails: {}
 
     };
     componentDidMount = async () => {
+        await this.props.dispatch(getAllPusher(pusher));
         // await this.props.dispatch(fetchAllPlayers(this.state.isHost, this.state.username, pusher));
         if(this.props.isHost === true){
             console.log(this.state.userNameList)
@@ -93,20 +95,38 @@ class Game extends React.Component {
         await this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
     }
 
-    show = async() =>{
+    show = () =>{
+        // await this.props.dispatch(fetchMakeMove(this.state.username, this.props.userSeen, this.props.userFolded, this.state.counterBet, this.props.userInfo.amount['$numberDecimal'], this.props.isHost, pusher));
         console.log("SHOWING")
+        this.props.dispatch(determineWinner(this.props.gameStatus.playersInRound, this.state.username, this.state.counterBet, this.props.userInfo.amount['$numberDecimal'], pusher), function(err, res){
+            console.log(this.props.winnerDetails)
+        })
+        console.log(this.props.winnerDetails)
+        console.log(this.props.gameStatus.winnerDetermined)
+        // await this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
+        
     }
+
     componentDidUpdate = async()=>{
-        console.log(this.state.hasWon);
         if(!_.isUndefined(this.props.gameStatus)){
-            if(this.props.gameStatus.playersRemaining == 1 && this.props.gameStatus.playersInRound[0] === this.state.username && this.state.hasWon === false){
+            if(this.props.gameStatus.playersRemaining === 1 && this.props.gameStatus.playersInRound[0] === this.state.username && this.state.hasWon === false){
                 console.log("WE HAVE A WINNER");
                 this.setState({hasWon:true});
                 await payWinner(this.state.username, this.props.potAmount);
                 setTimeout(function () {
+                    this.props.dispatch(hasSeenCards(false));
                     this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
                 }.bind(this), 5000);
             }    
+        }
+        if(!_.isUndefined(this.props.gameStatus) && !_.isUndefined(this.props.winnerDetails)){
+            if(this.props.gameStatus.winnerDetermined === true){
+                await payWinner(this.props.winnerDetails.winner, Number(this.props.gameStatus.pot['$numberDecimal']));
+                setTimeout(function () {
+                    this.props.dispatch(hasSeenCards(false));
+                    this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
+                }.bind(this), 5000);
+            }
         }
     }
 
@@ -118,9 +138,6 @@ class Game extends React.Component {
                     arrayOfUsers.push(this.props.otherPlayerList[this.state.userNameList[i]]);
                 }
             }
-            // if(this.props.isHost === false){
-            //     arrayOfUsers.push(this.props.otherPlayerList.Host);
-            // }
             var otherPlayer = arrayOfUsers.map(function (otherUserObject) {
                     return <OtherUser key={`${otherUserObject.name}`} name={otherUserObject.name} hasSeen={otherUserObject.hasSeen} hasFolded={otherUserObject.hasFolded} amount={otherUserObject.amount['$numberDecimal']}></OtherUser>
             })
@@ -134,6 +151,7 @@ class Game extends React.Component {
         return (
             <div className='Game Screen'>
                 <h6>Pot : </h6>{(!_.isUndefined(this.props.potAmount))?this.props.potAmount:null}
+        {!_.isUndefined(this.props.winnerDetails) && this.props.gameStatus.winnerDetermined === true ?<Winner key={`${this.state.username}${this.props.gameStatus.winner}`} winnerDetails={this.props.winnerDetails}></Winner> : null}
         {(!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 1) ?<h6>{this.props.gameStatus.playersInRound[0]} has Won!</h6> :null}
                 {otherPlayer}
                 {(!_.isUndefined(this.props.userInfo))?
@@ -171,7 +189,8 @@ function mapStateToProps(state) {
         userFolded: state.userFolded, 
         userAmount: state.userAmount,
         gameStatus: state.gameStatus,
-        potAmount: state.potAmount
+        potAmount: state.potAmount,
+        winnerDetails: state.winnerDetails
     }
 }
 
@@ -210,3 +229,19 @@ const Card = ({ suite, value }) => {
         </div>
     );
 };
+
+const Winner = ({winnerDetails}) =>{
+    return(
+        <p>
+            {winnerDetails.winner} won!. <br></br>{winnerDetails.firstPersonDetails.username} had a {winnerDetails.firstPersonDetails.hand} 
+            with a {winnerDetails.firstPersonDetails.cards[0].value} of {winnerDetails.firstPersonDetails.cards[0].suite}, 
+            {winnerDetails.firstPersonDetails.cards[1].value} of {winnerDetails.firstPersonDetails.cards[1].suite}, 
+            {winnerDetails.firstPersonDetails.cards[2].value} of {winnerDetails.firstPersonDetails.cards[2].suite}. 
+            <br></br>
+            {winnerDetails.secondPersonDetails.username} had a {winnerDetails.secondPersonDetails.hand} 
+            with a {winnerDetails.secondPersonDetails.cards[0].value} of {winnerDetails.secondPersonDetails.cards[0].suite}, 
+            {winnerDetails.secondPersonDetails.cards[1].value} of {winnerDetails.secondPersonDetails.cards[1].suite}, 
+            {winnerDetails.secondPersonDetails.cards[2].value} of {winnerDetails.secondPersonDetails.cards[2].suite}.
+        </p>
+    )
+}

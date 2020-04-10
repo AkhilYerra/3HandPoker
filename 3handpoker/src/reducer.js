@@ -93,6 +93,13 @@ const initialState = {
         console.log("PAYING PLAYER");
         return;
     }
+    if(action.type === constant.actions.GET_WINNER){
+        console.log("GETTING WINNER");
+        console.log(action.winnerData);
+        return Object.assign({}, state,{
+            winnerDetails : action.winnerData,
+        })
+    }
     return state;
   }
   
