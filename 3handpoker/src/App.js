@@ -3,6 +3,7 @@ import { BrowserRouter, Route } from 'react-router-dom'
 import Home from './home/homeComponent';
 import WaitingList from './waitingList/waitingListComponet'
 import Game from './game/gameComponent';
+import EndGame from './end/endComponent'
 import {Provider} from 'react-redux'
 
 class App extends React.Component {
@@ -22,6 +23,8 @@ class App extends React.Component {
             component={WaitingList} />
             <Route path="/game/:userName"
             component={Game} />
+            <Route path="/endGame"
+            component={EndGame} />
         </BrowserRouter>
       </div>
     );

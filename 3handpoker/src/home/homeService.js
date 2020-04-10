@@ -52,7 +52,7 @@ export function fetchUserList(username, pusher, buyInAmount) {
           if(res.error) {
               throw(res.error);
           }
-          console.log(buyInAmount)
+          //console.log(buyInAmount)
           pusher.bind('retrieveUserList', function(data) {
             dispatch(getUsersSuccess(username, data, buyInAmount))
           });

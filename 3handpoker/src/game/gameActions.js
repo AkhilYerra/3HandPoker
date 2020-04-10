@@ -53,3 +53,9 @@ export function getWinner(data){
     }
 }
 
+export function setHasWon(hasWon){
+    return{
+        type: constants.actions.SET_HAS_WON,
+        hasWon: hasWon
+    }
+}

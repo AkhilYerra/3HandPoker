@@ -1,4 +1,4 @@
-import { getAllPlayers, updateGameStatus, payPlayer, getWinner } from './gameActions'
+import { getAllPlayers, updateGameStatus, payPlayer, getWinner, setHasWon } from './gameActions'
 import _ from 'lodash'
 const constant = require('../common/constants')
 
@@ -19,7 +19,7 @@ export function fetchAllPlayers(isHost, username, pusher) {
           throw (res.error);
         }
         pusher.bind('getAllPlayers', function (data) {
-          console.log(data);
+          //console.log(data);
           dispatch(getAllPlayers(isHost, username, data))
         });
         return null;
@@ -32,6 +32,7 @@ export function fetchAllPlayers(isHost, username, pusher) {
 }
 
 export function shuffle(isHost, username, userNameList, pusher) {
+  console.log(`isHost:${isHost}, username:${username}, users:${userNameList.length} shuffling now`)
   return dispatch => {
     fetch('http://localhost:4000/shuffle',
       {
@@ -47,15 +48,18 @@ export function shuffle(isHost, username, userNameList, pusher) {
         if (res.error) {
           throw (res.error);
         }
-        console.log(`The Shuffle has been called`)
+        //console.log(`The Shuffle has been called`)
         pusher.bind('getAllPlayers', function (data) {
+          console.log("PUSHER GETTING ALL PLAYERS");
           console.log(data);
           dispatch(getAllPlayers(isHost, username, data))
         });
         pusher.bind('retrieveGameState', function (data) {
+          console.log("PUSHER GETTING GAME STATUS");
           console.log(data);
           dispatch(updateGameStatus(data))
         });
+        dispatch(setHasWon(false))
         return '';
       })
       .catch(error => {
@@ -75,7 +79,7 @@ export function fetchMakeMove(username, userSeen, userFolded, counterBet, amount
   if (body.hasFolded === true) {
     body.amount = 0;
   }
-  console.log(body);
+  //console.log(body);
   return dispatch => {
     fetch('http://localhost:4000/makeMove',
       {
@@ -91,13 +95,13 @@ export function fetchMakeMove(username, userSeen, userFolded, counterBet, amount
         if (res.error) {
           throw (res.error);
         }
-        console.log(`The Shuffle has been called`)
+        //console.log(`The Shuffle has been called`)
         pusher.bind('getAllPlayers', function (data) {
-          console.log(data);
+          //console.log(data);
           dispatch(getAllPlayers(isHost, username, data))
         });
         pusher.bind('retrieveGameState', function (data) {
-          console.log(data);
+          //console.log(data);
           dispatch(updateGameStatus(data))
         });
         return '';
@@ -139,7 +143,7 @@ export function determineWinner(playersInRound, username, userBet, playerAmount,
     potAmount: Number(userBet * 0.25)
   }
   
-  console.log(body)
+  //console.log(body)
   return dispatch => {
     fetch(`http://localhost:4000/getWinner/${playersInRound[0]}/${playersInRound[1]}?pressedShow=${username}`,
       {
@@ -156,7 +160,7 @@ export function determineWinner(playersInRound, username, userBet, playerAmount,
           throw (res.error);
         }
         pusher.bind('getWinner', function (data) {
-          console.log(data);
+          //console.log(data);
           dispatch(getWinner(data))
         });
         return '';
@@ -169,8 +173,64 @@ export function determineWinner(playersInRound, username, userBet, playerAmount,
 export function getAllPusher(pusher){
   return dispatch =>{
     pusher.bind('getWinner', function (data) {
-      console.log(data);
+      //console.log(data);
       dispatch(getWinner(data))
     });  
+    pusher.bind('retrieveGameState', function (data) {
+      //console.log(data);
+      dispatch(updateGameStatus(data))
+    });  
+  }
+}
+
+export function endGame(pusher){
+  return dispatch => {
+    fetch(`http://localhost:4000/endGame`,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      }
+    )
+      .then(res => {
+        if (res.error) {
+          throw (res.error);
+        }
+        pusher.bind('retrieveGameState', function (data) {
+          //console.log(data);
+          dispatch(updateGameStatus(data))
+        });
+        return '';
+      })
+      .catch(error => {
+      })
+  }
+}
+
+export function setWinnerIsTrue(pusher){
+  return dispatch => {
+    fetch(`http://localhost:4000/fold`,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      }
+    )
+      .then(res => {
+        if (res.error) {
+          throw (res.error);
+        }
+        pusher.bind('retrieveGameState', function (data) {
+          //console.log(data);
+          dispatch(updateGameStatus(data))
+        });
+        return '';
+      })
+      .catch(error => {
+      })
   }
 }

@@ -15,8 +15,8 @@ pusher.subscribe('3HandPoker');
 class WaitingList extends React.Component {
     constructor(props) {
         super(props);
-        // console.log("AHOO")
-        // console.log(this.props);
+        // //console.log("AHOO")
+        // //console.log(this.props);
         this.state.isHost = this.props.isHost;
         this.state.buyInAmount = this.props.buyInAmount;
         this.state.hasGameStarted = this.props.hasGameStarted;
@@ -44,7 +44,7 @@ class WaitingList extends React.Component {
 
     startGameOnClick = () => {
             for(let i = 0; i < this.props.userNameList.length; i++){
-                console.log(this.state.buyInAmount)
+                //console.log(this.state.buyInAmount)
                 //TODO:Change this from 15 to a dynamic value
                 let samplePlayer = {
                     playerName : this.props.userNameList[i],

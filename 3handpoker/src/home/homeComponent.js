@@ -42,7 +42,7 @@ class Home extends React.Component {
     }
 
     enteredBuyInAmount = (event) =>{
-        console.log(event.target.value)
+        //console.log(event.target.value)
         this.props.dispatch(fetchAddedUser('Admin', pusher));
         this.setState({buyInAmount : 15.0})
         this.props.dispatch(fetchUserList('Admin', pusher, 15.0));
