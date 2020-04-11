@@ -1,11 +1,12 @@
 import { getAllPlayers, updateGameStatus, payPlayer, getWinner, setHasWon } from './gameActions'
 import _ from 'lodash'
+import { googleCloudURL } from '../common/constants'
 const constant = require('../common/constants')
 
 
 export function fetchAllPlayers(isHost, username, pusher) {
   return dispatch => {
-    fetch('http://localhost:4000/allPlayers',
+    fetch(`${googleCloudURL}/allPlayers`,
       {
         method: 'GET',
         headers: {
@@ -34,7 +35,7 @@ export function fetchAllPlayers(isHost, username, pusher) {
 export function shuffle(isHost, username, userNameList, pusher) {
   console.log(`isHost:${isHost}, username:${username}, users:${userNameList.length} shuffling now`)
   return dispatch => {
-    fetch('http://localhost:4000/shuffle',
+    fetch(`${googleCloudURL}/shuffle`,
       {
         method: 'POST',
         headers: {
@@ -81,7 +82,7 @@ export function fetchMakeMove(username, userSeen, userFolded, counterBet, amount
   }
   //console.log(body);
   return dispatch => {
-    fetch('http://localhost:4000/makeMove',
+    fetch(`${googleCloudURL}/makeMove`,
       {
         method: 'POST',
         headers: {
@@ -116,7 +117,7 @@ export function payWinner(username, potAmount) {
     username: username,
     potAmount: potAmount
   }
-  fetch('http://localhost:4000/payWinner',
+  fetch(`${googleCloudURL}/payWinner`,
     {
       method: 'POST',
       headers: {
@@ -145,7 +146,7 @@ export function determineWinner(playersInRound, username, userBet, playerAmount,
   
   //console.log(body)
   return dispatch => {
-    fetch(`http://localhost:4000/getWinner/${playersInRound[0]}/${playersInRound[1]}?pressedShow=${username}`,
+    fetch(`${googleCloudURL}/getWinner/${playersInRound[0]}/${playersInRound[1]}?pressedShow=${username}`,
       {
         method: 'POST',
         headers: {
@@ -185,7 +186,7 @@ export function getAllPusher(pusher){
 
 export function endGame(pusher){
   return dispatch => {
-    fetch(`http://localhost:4000/endGame`,
+    fetch(`${googleCloudURL}/endGame`,
       {
         method: 'GET',
         headers: {
@@ -211,7 +212,7 @@ export function endGame(pusher){
 
 export function setWinnerIsTrue(pusher){
   return dispatch => {
-    fetch(`http://localhost:4000/fold`,
+    fetch(`${googleCloudURL}/fold`,
       {
         method: 'GET',
         headers: {

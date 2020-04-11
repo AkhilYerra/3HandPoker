@@ -28,5 +28,5 @@ export const winningHands = {
     HIGH_CARD: 'HIGH_CARD'
 }
 
-
-
+export const googleCloudURL = 'http://localhost:4000'
+// export const googleCloudURL = 'https://sunny-strategy-273822.ue.r.appspot.com'

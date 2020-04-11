@@ -1,8 +1,9 @@
 import {startGame} from './waitingListActions'
+import {googleCloudURL} from '../common/constants'
 
 export function fetchStartGame(pusher) {
   return dispatch => {
-      fetch('http://localhost:4000/startGame', 
+      fetch(`${googleCloudURL}/startGame`, 
       {
           method:'GET',
           headers: {
@@ -30,7 +31,7 @@ export function fetchStartGame(pusher) {
 
 export function populatePlayers(samplePlayer, pusher) {
     return dispatch => {
-        fetch('http://localhost:4000/startGame/initiatePlayers', 
+        fetch(`${googleCloudURL}/startGame/initiatePlayers`, 
         {
             method:'POST',
             headers: {

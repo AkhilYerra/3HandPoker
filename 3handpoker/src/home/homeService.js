@@ -1,5 +1,5 @@
 import {addUserSuccess, addUserError, getUsersSuccess} from './homeActions';
-
+import {googleCloudURL} from '../common/constants'
 
 
 
@@ -7,7 +7,7 @@ import {addUserSuccess, addUserError, getUsersSuccess} from './homeActions';
 
 export function fetchAddedUser(username, pusher) {
     return dispatch => {
-        fetch('http://localhost:4000/addUser', 
+        fetch(`${googleCloudURL}/addUser`, 
         {
             method:'POST',
             headers: {
@@ -38,7 +38,7 @@ export function fetchAddedUser(username, pusher) {
 
 export function fetchUserList(username, pusher, buyInAmount) {
   return dispatch => {
-      fetch('http://localhost:4000/users', 
+      fetch(`${googleCloudURL}/users`, 
       {
           method:'GET',
           headers: {

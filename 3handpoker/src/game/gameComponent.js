@@ -103,7 +103,10 @@ class Game extends React.Component {
     show = async () => {
         console.log(`${this.state.username} has asked opponent to show cards`);
         await this.props.dispatch(determineWinner(this.props.gameStatus.playersInRound, this.state.username, this.state.counterBet, this.props.userInfo.amount['$numberDecimal'], pusher))
-
+        setTimeout(async function () {
+            await this.props.dispatch(hasSeenCards(false));
+            await this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
+        }.bind(this), 5000);
     }
 
     componentDidUpdate = async () => {
@@ -123,19 +126,7 @@ class Game extends React.Component {
                 }.bind(this), 5000);
             }
         }
-        if (!_.isUndefined(this.props.gameStatus) && !_.isUndefined(this.props.winnerDetails) && this.state.hasWon === false) {
-            console.log(`${this.state.username} has won. But outside loop with ${this.props.gameStatus.hasWinner},${this.state.hasWon},${this.props.winnerDetails.winner},${this.state.username}`)
-            if (this.props.gameStatus.hasWinner === true && this.props.hasWon === false && this.props.winnerDetails.winner === this.state.username) {
-                console.log(`${this.state.username} has won the game`);
-                await this.props.dispatch(setHasWon(true))
-                await payWinner(this.props.winnerDetails.winner, Number(this.props.gameStatus.pot['$numberDecimal']));
-                console.log(`${this.props.winnerDetails.winner} has won the game with a pot of ${Number(this.props.gameStatus.pot['$numberDecimal'])}`);
-                setTimeout(async function () {
-                    await this.props.dispatch(hasSeenCards(false));
-                    await this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
-                }.bind(this), 5000);
-            }
-        }
+
     }
 
     endGame = async () => {
@@ -173,7 +164,7 @@ class Game extends React.Component {
                 {otherPlayer}
                 {(!_.isUndefined(this.props.userInfo)) ?
                     <Player key={`${this.props.userInfo.name}`} name={this.props.userInfo.name} hasSeen={this.props.userInfo.hasSeen} hasFolded={this.props.userInfo.hasFolded} amount={this.props.userInfo.amount['$numberDecimal']}></Player> : null}
-                {(!_.isUndefined(this.props.userSeen) && this.props.userSeen === true) ?
+                {(!_.isUndefined(this.props.userInfo) && this.props.userInfo.hasSeen === true ) ?
                     cardsOfPlayer.map(card => {
                         return (
                             <Card key={`${card.suite}${card.value}`} suite={card.suite} value={card.value} />
