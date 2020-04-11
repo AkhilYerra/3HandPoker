@@ -54,7 +54,6 @@ class Game extends React.Component {
     }
     viewCards = async () => {
         await viewCards(this.state.username);
-        await this.props.dispatch(fetchAllPlayers(this.state.isHost, this.state.username, pusher))
         //console.log(this.props.userSeen)
     }
     foldForGame = async () => {
@@ -149,7 +148,7 @@ class Game extends React.Component {
                 }
             }
             var otherPlayer = arrayOfUsers.map(function (otherUserObject) {
-                return <OtherUser key={`${otherUserObject.name}`} name={otherUserObject.name} hasSeen={otherUserObject.hasSeen} hasFolded={otherUserObject.hasFolded} amount={otherUserObject.amount['$numberDecimal']}></OtherUser>
+                return <OtherUser key={`${otherUserObject.name}`} name={otherUserObject.name} hasSeen={otherUserObject.hasSeen} hasFolded={otherUserObject.hasFolded} amount={otherUserObject.amount['$numberDecimal']} yourTurn={otherUserObject.isYourTurn}></OtherUser>
             })
 
         }
@@ -165,7 +164,7 @@ class Game extends React.Component {
                 {(!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 1) ? <h6>{this.props.gameStatus.playersInRound[0]} has Won!</h6> : null}
                 {otherPlayer}
                 {(!_.isUndefined(this.props.userInfo)) ?
-                    <Player key={`${this.props.userInfo.name}`} name={this.props.userInfo.name} hasSeen={this.props.userInfo.hasSeen} hasFolded={this.props.userInfo.hasFolded} amount={this.props.userInfo.amount['$numberDecimal']}></Player> : null}
+                    <Player key={`${this.props.userInfo.name}`} name={this.props.userInfo.name} hasSeen={this.props.userInfo.hasSeen} hasFolded={this.props.userInfo.hasFolded} amount={this.props.userInfo.amount['$numberDecimal']} yourTurn={this.props.userInfo.isYourTurn}></Player> : null}
                 {(!_.isUndefined(this.props.userInfo) && this.props.userInfo.hasSeen === true) ?
                     cardsOfPlayer.map(card => {
                         return (
@@ -212,24 +211,22 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps)(Game)
 
-const OtherUser = ({ name, hasSeen, hasFolded, amount }) => {
+const OtherUser = ({ name, hasSeen, hasFolded, amount, yourTurn }) => {
     return (
         <div>
-            <h3>{name}</h3>
+            <h3 style={yourTurn===true? {color:'green'} : null }>{name}{hasSeen === true ? '👀' : '😎'}</h3>
             <h6>
-                {hasSeen === true ? 'hasSeen' : 'Blind'}
                 {hasFolded === true ? 'Folded' : 'Playing'}
                 {amount}
             </h6>
         </div>
     );
 };
-const Player = ({ name, hasSeen, hasFolded, amount }) => {
+const Player = ({ name, hasSeen, hasFolded, amount , yourTurn}) => {
     return (
         <div>
-            <h3>{name}</h3>
+            <h3 style={yourTurn===true? {color:'green'} : null }>{name}{hasSeen === true ? '👀' : '😎'}</h3>
             <h6>
-                {hasSeen === true ? 'hasSeen' : 'Blind'}
                 {hasFolded === true ? 'Folded' : 'Playing'}
                 {amount}
             </h6>
@@ -241,7 +238,12 @@ const Card = ({ suite, value }) => {
 
     return (
         <div>
-            <h6>{suite} - {faceValue[value - 1]}</h6>
+            <h4>
+            {_.toUpper(suite) === 'SPADE' ? '♠️' : null}
+            {_.toUpper(suite) === 'DIAMOND' ? '♦️' : null}
+            {_.toUpper(suite) === 'CLOVER' ? '♣️' : null}
+            {_.toUpper(suite) === 'HEART' ? '♥️' : null}
+            {faceValue[value - 1]}</h4>
         </div>
     );
 };
@@ -250,14 +252,15 @@ const Winner = ({ winnerDetails }) => {
     return (
         <p>
             {winnerDetails.winner} won!. <br></br>{winnerDetails.firstPersonDetails.username} had a {winnerDetails.firstPersonDetails.hand}
-            with a {winnerDetails.firstPersonDetails.cards[0].value} of {winnerDetails.firstPersonDetails.cards[0].suite},
-            {winnerDetails.firstPersonDetails.cards[1].value} of {winnerDetails.firstPersonDetails.cards[1].suite},
-            {winnerDetails.firstPersonDetails.cards[2].value} of {winnerDetails.firstPersonDetails.cards[2].suite}.
-            <br></br>
+            <Card key={`${winnerDetails.firstPersonDetails.username}1`} suite={winnerDetails.firstPersonDetails.cards[0].suite} value={winnerDetails.firstPersonDetails.cards[0].value} />
+            <Card key={`${winnerDetails.firstPersonDetails.username}2`} suite={winnerDetails.firstPersonDetails.cards[1].suite} value={winnerDetails.firstPersonDetails.cards[1].value} />
+            <Card key={`${winnerDetails.firstPersonDetails.username}3`} suite={winnerDetails.firstPersonDetails.cards[2].suite} value={winnerDetails.firstPersonDetails.cards[2].value} />
+
             {winnerDetails.secondPersonDetails.username} had a {winnerDetails.secondPersonDetails.hand}
-            with a {winnerDetails.secondPersonDetails.cards[0].value} of {winnerDetails.secondPersonDetails.cards[0].suite},
-            {winnerDetails.secondPersonDetails.cards[1].value} of {winnerDetails.secondPersonDetails.cards[1].suite},
-            {winnerDetails.secondPersonDetails.cards[2].value} of {winnerDetails.secondPersonDetails.cards[2].suite}.
+            <Card key={`${winnerDetails.secondPersonDetails.username}1`} suite={winnerDetails.secondPersonDetails.cards[0].suite} value={winnerDetails.secondPersonDetails.cards[0].value} />
+            <Card key={`${winnerDetails.secondPersonDetails.username}2`} suite={winnerDetails.secondPersonDetails.cards[1].suite} value={winnerDetails.secondPersonDetails.cards[1].value} />
+            <Card key={`${winnerDetails.secondPersonDetails.username}3`} suite={winnerDetails.secondPersonDetails.cards[2].suite} value={winnerDetails.secondPersonDetails.cards[2].value} />
+            
         </p>
     )
 }
