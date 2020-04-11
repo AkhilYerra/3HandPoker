@@ -18,6 +18,7 @@ class End extends React.Component {
         return (
             <div className='EndScreen'>
                 <h3> Game Has Ended</h3>
+                <a href="/"> Return to Home </a>
             </div>
         );
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect } from "react-router-dom";
 import { connect } from 'react-redux'
 import { hasSeenCards, hasFoldedRound, hasBet, setHasWon } from './gameActions'
-import { fetchAllPlayers, shuffle, fetchMakeMove, payWinner, determineWinner, getAllPusher, endGame, setWinnerIsTrue } from './gameService'
+import { fetchAllPlayers, shuffle, fetchMakeMove, payWinner, determineWinner, getAllPusher, endGame, setWinnerIsTrue, viewCards } from './gameService'
 import Pusher from 'pusher-js';
 import _ from 'lodash'
 
@@ -42,7 +42,7 @@ class Game extends React.Component {
     };
     componentDidMount = async () => {
         await this.props.dispatch(getAllPusher(pusher));
-        await this.props.dispatch(setHasWon(false));
+        this.setState({ hasWon: false });
         // await this.props.dispatch(fetchAllPlayers(this.state.isHost, this.state.username, pusher));
         if (this.props.isHost === true) {
             //console.log(this.state.userNameList)
@@ -53,15 +53,38 @@ class Game extends React.Component {
 
     }
     viewCards = async () => {
-        await this.props.dispatch(hasSeenCards(true));
+        await viewCards(this.state.username);
+        await this.props.dispatch(fetchAllPlayers(this.state.isHost, this.state.username, pusher))
         //console.log(this.props.userSeen)
     }
     foldForGame = async () => {
-        await this.props.dispatch(fetchMakeMove(this.state.username, this.props.userSeen, true, this.state.counterBet, this.props.userInfo.amount['$numberDecimal'], this.props.isHost, pusher));
+        await this.props.dispatch(fetchMakeMove(this.state.username, this.props.userInfo.hasSeen, true, this.state.counterBet, this.props.userInfo.amount['$numberDecimal'], this.props.isHost, pusher));
         //console.log(this.props.userFolded)
     }
+
+    foldAndEndRound = async () => {
+        await this.props.dispatch(fetchMakeMove(this.state.username, this.props.userInfo.hasSeen, true, this.state.counterBet, this.props.userInfo.amount['$numberDecimal'], this.props.isHost, pusher));
+        let losingUser = this.state.username;
+        let winningUser = '';
+        if (this.props.gameStatus.playersRemaining === 1) {
+            winningUser = this.props.gameStatus.playersInRound[0];
+        } else {
+            let indexOfLose = this.props.gameStatus.playersInRound.indexOf(losingUser);
+            if (indexOfLose === 1) {
+                winningUser = this.props.gameStatus.playersInRound[0];
+            } else {
+                winningUser = this.props.gameStatus.playersInRound[1]
+            }
+        }
+        console.log(this.props.potAmount);
+        await payWinner(winningUser, this.props.potAmount);
+        setTimeout(async function () {
+            await this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
+        }.bind(this), 5000);
+
+    }
     makeMove = async () => {
-        await this.props.dispatch(fetchMakeMove(this.state.username, this.props.userSeen, this.props.userFolded, this.state.counterBet, this.props.userInfo.amount['$numberDecimal'], this.props.isHost, pusher));
+        await this.props.dispatch(fetchMakeMove(this.state.username, this.props.userInfo.hasSeen, this.props.userFolded, this.state.counterBet, this.props.userInfo.amount['$numberDecimal'], this.props.isHost, pusher));
     }
 
     decrement = () => {
@@ -93,9 +116,7 @@ class Game extends React.Component {
         console.log("Round has ended. Cards are being shuffled");
         await this.props.dispatch(hasSeenCards(false));
         await this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
-        if (this.props.gameStatus.hasWinner === false) {
-            this.setState({ hasWon: false });
-        }
+        this.setState({ hasWon: false });
         this.setState({ twoPeopleLeft: false });
 
     }
@@ -109,25 +130,6 @@ class Game extends React.Component {
         }.bind(this), 5000);
     }
 
-    componentDidUpdate = async () => {
-        
-
-        if (!_.isUndefined(this.props.gameStatus)) {
-            if (this.props.gameStatus.playersRemaining === 1 && this.props.gameStatus.playersInRound[0] === this.state.username && this.props.hasWon === false) {
-                console.log(`${this.state.username} has folded and therefore default win`);
-                await setWinnerIsTrue(pusher);
-                await this.props.dispatch(setHasWon(true))
-                if (this.props.gameStatus.hasWinner === true && this.props.hasWon === true) {
-                    await payWinner(this.state.username, this.props.potAmount);
-                }
-                setTimeout(async function () {
-                    await this.props.dispatch(hasSeenCards(false));
-                    await this.props.dispatch(shuffle(this.props.isHost, this.state.username, this.state.userNameList, pusher));
-                }.bind(this), 5000);
-            }
-        }
-
-    }
 
     endGame = async () => {
         await this.props.dispatch(endGame(pusher));
@@ -164,7 +166,7 @@ class Game extends React.Component {
                 {otherPlayer}
                 {(!_.isUndefined(this.props.userInfo)) ?
                     <Player key={`${this.props.userInfo.name}`} name={this.props.userInfo.name} hasSeen={this.props.userInfo.hasSeen} hasFolded={this.props.userInfo.hasFolded} amount={this.props.userInfo.amount['$numberDecimal']}></Player> : null}
-                {(!_.isUndefined(this.props.userInfo) && this.props.userInfo.hasSeen === true ) ?
+                {(!_.isUndefined(this.props.userInfo) && this.props.userInfo.hasSeen === true) ?
                     cardsOfPlayer.map(card => {
                         return (
                             <Card key={`${card.suite}${card.value}`} suite={card.suite} value={card.value} />
@@ -175,11 +177,14 @@ class Game extends React.Component {
                 {this.state.counterBet}
                 <button onClick={this.increment}>+</button>
                 <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.makeMove}>Bet</button>
-                <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.foldForGame}>Fold</button>
+                {(!_.isUndefined(this.props.userInfo) && this.state.userFolded === false && !_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining > 2) ?
+                    <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.foldForGame}>Fold</button> : null}
+                {(!_.isUndefined(this.props.userInfo) && this.state.userFolded === false && !_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 2 && this.props.gameStatus.playersInRound.includes(this.state.username)) ?
+                    <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.foldAndEndRound}>FoldEnd</button> : null}
                 {(!_.isUndefined(this.props.isHost) && this.props.isHost === true) ?
-                    <button onClick={this.shuffleRound}>Shuffle</button> : null}
+                    <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.shuffleRound}>Shuffle</button> : null}
                 {(!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 2 && this.props.gameStatus.playersInRound.includes(this.state.username) && this.state.userFolded === false) ?
-                    <button onClick={this.show}>Show</button> : null}
+                    <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.show}>Show</button> : null}
                 {(!_.isUndefined(this.props.isHost) && this.props.isHost === true) ?
                     <button onClick={this.endGame}>End Game</button> : null}
             </div>

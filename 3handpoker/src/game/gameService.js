@@ -235,3 +235,24 @@ export function setWinnerIsTrue(pusher){
       })
   }
 }
+
+export function viewCards(username){
+    fetch(`${googleCloudURL}/seeCards/${username}`,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      }
+    )
+      .then(res => {
+        if (res.error) {
+          throw (res.error);
+        }
+
+        return '';
+      })
+      .catch(error => {
+      })
+  }
