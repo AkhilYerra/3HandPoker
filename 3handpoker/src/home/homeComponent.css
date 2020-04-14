@@ -1,0 +1,18 @@
+.submitButton{
+    width: 100%;
+}
+
+#userNameInput{
+    width: 100%;
+    text-align: center;
+}
+
+#userType{
+    width: 100%;
+    text-align: center;
+}
+
+#buyInAmountInput{
+    width: 100%;
+    text-align: center;
+}

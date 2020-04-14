@@ -1,11 +1,13 @@
 import React from 'react';
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import _ from 'lodash'
 import {connect} from 'react-redux'
-import {addUser, changeToHost, changeToUser,userEntered} from '../actions'
-import {addUserSuccess} from './homeActions'
+import {changeToHost, changeToUser} from '../actions'
 import {fetchAddedUser, fetchUserList} from '../home/homeService'
 import Pusher from 'pusher-js';
+import './homeComponent.css';
+import { Button} from 'react-bootstrap';
+
 var pusher = new Pusher('4edf52a5d834ee8fe586', {
     cluster: 'us2',
     forceTLS: true
@@ -68,15 +70,15 @@ class Home extends React.Component {
         }
         return (
             <div className='RegisterScreen'>
-                <h3> Please Enter Your Name and Buy In Amount</h3>
+                <h3> Please Enter Your Name</h3>
                 <select id="userType" onChange={this.changeUserType}>
                     <option value="false">Choose Your Own Name</option>
                     <option value="true">Host</option>
                 </select>
                 {(this.state.isHost || this.props.isHost)? <input id='buyInAmountInput' type='number' onChange={this.handleAmountChange} value={this.state.username} placeholder="5"></input>
                 : <input id='userNameInput' onChange={this.handleChange} value={this.state.username} placeholder="Akhil"></input>}
-                {(this.state.isHost || this.props.isHost)? <button onClick={this.enteredBuyInAmount}>Submit Amount</button>
-                : <button onClick={this.enteredUserName}>Submit</button>}
+                {(this.state.isHost || this.props.isHost)? <Button variant="success" className="submitButton" onClick={this.enteredBuyInAmount}>Submit Amount</Button>
+                : <Button variant="success" className="submitButton" onClick={this.enteredUserName}>Submit</Button>}
                 
             </div>
         );
