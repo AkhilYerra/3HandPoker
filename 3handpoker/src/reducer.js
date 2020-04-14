@@ -104,6 +104,26 @@ const initialState = {
             hasWon : action.hasWon,
         })
     }
+
+    if(action.type === constant.actions.REVISE_CONSULT_LIST){
+        return Object.assign({}, state,{
+            consultList : action.consultList,
+        })
+    }
+
+    if(action.type === constant.actions.GET_CONSULT){
+        console.log("REDUCER CONSULT WITH");
+        return Object.assign({}, state,{
+            consultDetails : action.consultDetails,
+        })
+    }
+    if(action.type === constant.actions.UNCONSULT){
+        return Object.assign({}, state,{
+            gameStatus : action.gameStatus,
+        })
+    }
+
+
     return state;
   }
   

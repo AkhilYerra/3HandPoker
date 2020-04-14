@@ -7,6 +7,7 @@ import * as serviceWorker from './serviceWorker';
 import createStore from './createReduxStore';
 import rootReducer from './reducer'
 import store from './createReduxStore'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 ReactDOM.render(

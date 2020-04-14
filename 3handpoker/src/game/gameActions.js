@@ -59,3 +59,24 @@ export function setHasWon(hasWon){
         hasWon: hasWon
     }
 }
+
+export function updateConsult(consultList){
+    return{
+        type: constants.actions.REVISE_CONSULT_LIST, 
+        consultList : consultList
+    }
+}
+
+export function getConsult(data){
+    return{
+        type: constants.actions.GET_CONSULT,
+        consultDetails: data
+    }
+}
+
+export function unConsult(data){
+    return{
+        type: constants.actions.UNCONSULT,
+        gameStatus: data
+    }
+}

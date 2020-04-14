@@ -1,4 +1,4 @@
-import { getAllPlayers, updateGameStatus, payPlayer, getWinner, setHasWon } from './gameActions'
+import { getAllPlayers, updateGameStatus, payPlayer, getWinner, setHasWon, getConsult } from './gameActions'
 import _ from 'lodash'
 import { googleCloudURL } from '../common/constants'
 const constant = require('../common/constants')
@@ -181,6 +181,10 @@ export function getAllPusher(pusher){
       //console.log(data);
       dispatch(updateGameStatus(data))
     });  
+    pusher.bind('getConsult', function (data) {
+      //console.log(data);
+      dispatch(getConsult(data))
+    });
   }
 }
 
@@ -256,3 +260,62 @@ export function viewCards(username){
       .catch(error => {
       })
   }
+
+export function consultWith(playerToConsult, username, amountBet, amountUserHas, pusher){
+  let body = {
+    pressedShow: username,
+    amountPlayerHas: Number(amountUserHas),
+    amountPlayerBet: Number(amountBet * 0.25)
+  }
+  //console.log(body)
+  return dispatch => {
+    fetch(`${googleCloudURL}/consult/${username}/${playerToConsult}`,
+      {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body),
+      }
+    )
+      .then(res => {
+        if (res.error) {
+          throw (res.error);
+        }
+        pusher.bind('getConsult', function (data) {
+          dispatch(getConsult(data))
+        });
+        return '';
+      })
+      .catch(error => {
+      })
+  }
+}
+
+export function unConsult(consult, pusher){  
+  //console.log(body)
+  return dispatch => {
+    fetch(`${googleCloudURL}/unConsult`,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+      }
+    )
+      .then(res => {
+        if (res.error) {
+          throw (res.error);
+        }
+        pusher.bind('retrieveGameState', function (data) {
+          //console.log(data);
+          dispatch(unConsult(data))
+        });
+        return '';
+      })
+      .catch(error => {
+      })
+  }
+}
