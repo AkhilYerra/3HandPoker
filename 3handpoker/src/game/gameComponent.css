@@ -1,0 +1,26 @@
+.counterBetInput {
+    width: 45px;
+    border:3px solid purple;
+    text-align: center;
+  }
+
+.counterBetButton{
+    width: 25%;
+    padding:15px;
+}
+
+.SeeCardsButtonGroup{
+    width: 100%;
+}
+
+.BetButtonGroup{
+    width: 100%;
+}
+.counterBetField{
+    width: 20%
+}
+
+.AdminButtonGroup{
+    width: 100%;
+}
+

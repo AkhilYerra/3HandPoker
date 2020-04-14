@@ -5,7 +5,8 @@ import { hasSeenCards, hasFoldedRound, hasBet, setHasWon, updateConsult } from '
 import { fetchAllPlayers, shuffle, fetchMakeMove, payWinner, determineWinner, getAllPusher, endGame, setWinnerIsTrue, viewCards, unConsult, consultWith } from './gameService'
 import Pusher from 'pusher-js';
 import _ from 'lodash'
-import { Modal, Toast} from 'react-bootstrap';
+import { Modal, Button, ButtonGroup} from 'react-bootstrap';
+import './gameComponent.css';
 
 var pusher = new Pusher('4edf52a5d834ee8fe586', {
     cluster: 'us2',
@@ -187,7 +188,9 @@ class Game extends React.Component {
                 {!_.isUndefined(this.props.consultDetails) && this.props.gameStatus.consultInProgress === true && this.props.consultDetails.consultant === this.state.username ? <ConsultantDetails key={`Consultant${this.state.username}`} consultDetails={this.props.consultDetails} username={this.state.username}></ConsultantDetails> : null}
                 {!_.isUndefined(this.props.consultDetails) && this.props.gameStatus.consultInProgress === true && this.props.consultDetails.consulter === this.state.username ? <ConsulterDetails key={`Consulter${this.state.username}`} consultDetails={this.props.consultDetails} username={this.state.username}></ConsulterDetails> : null}
                 {(!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 1) ? <h6>{this.props.gameStatus.playersInRound[0]} has Won!</h6> : null}
+                <div>
                 {otherPlayer}
+                </div>
                 {(!_.isUndefined(this.props.userInfo)) ?
                     <Player key={`${this.props.userInfo.name}`} name={this.props.userInfo.name} hasSeen={this.props.userInfo.hasSeen} hasFolded={this.props.userInfo.hasFolded} amount={this.props.userInfo.amount['$numberDecimal']} yourTurn={this.props.userInfo.isYourTurn}></Player> : null}
                 {(!_.isUndefined(this.props.userInfo) && this.props.userInfo.hasSeen === true) ?
@@ -196,16 +199,26 @@ class Game extends React.Component {
                             <Card key={`${card.suite}${card.value}`} suite={card.suite} value={card.value} />
                         );
                     }) : null}
-                <button disabled={!(!_.isUndefined(this.props.userInfo) && !this.props.userInfo.hasSeen)} onClick={this.viewCards}>See Cards</button>
-                <button onClick={this.decrement}>-</button>
+                <ButtonGroup className="SeeCardsButtonGroup">
+                <Button variant="primary" disabled={!(!_.isUndefined(this.props.userInfo) && !this.props.userInfo.hasSeen)} onClick={this.viewCards}>See Cards</Button>
+                </ButtonGroup>
+                <br></br>
+                <ButtonGroup className="BetButtonGroup" aria-label="Basic example">
+                <Button className="counterBetField" variant="danger" onClick={this.decrement}>-</Button>
+                <div className="counterBetField counterBetInput">
                 {this.state.counterBet}
-                <button onClick={this.increment}>+</button>
-                <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.makeMove}>Bet</button>
+                </div>
+                <Button className="counterBetField" variant="success" onClick={this.increment}>+</Button>
+                <Button className="counterBetField" variant="dark" disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.makeMove}>Bet</Button>
                 {!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersInRound.length > 2 ?
-                    <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn)
-                        && this.state.userFolded === false} onClick={this.showConsultWindow}>Consult</button> : null}
+                    <Button className="counterBetField" variant="dark" disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn)
+                        && this.state.userFolded === false} onClick={this.showConsultWindow}>Consult</Button> : null}
+                {(!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 2 && this.props.gameStatus.playersInRound.includes(this.state.username) && this.state.userFolded === false) ?
+                    <Button className="counterBetField" variant="dark" disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.show}>Show</Button> : null}
+                </ButtonGroup>
+                <br></br>
                 <Modal show={this.state.showingConsultWindow} onHide={this.hideConsultWindow}>
-                    <Modal.Header closeButton>
+                    <Modal.Header closebutton>
                         <Modal.Title>List Of Users to Consult</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
@@ -221,16 +234,16 @@ class Game extends React.Component {
                     <Modal.Footer>
                     </Modal.Footer>
                 </Modal>
+                <ButtonGroup className="AdminButtonGroup" aria-label="Basic example">
                 {(!_.isUndefined(this.props.userInfo) && this.state.userFolded === false && !_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining > 2) ?
-                    <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.foldForGame}>Fold</button> : null}
+                    <Button className="AdminButtons" variant="dark" disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.foldForGame}>Fold</Button> : null}
                 {(!_.isUndefined(this.props.userInfo) && this.state.userFolded === false && !_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 2 && this.props.gameStatus.playersInRound.includes(this.state.username)) ?
-                    <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.foldAndEndRound}>FoldEnd</button> : null}
+                    <Button className="AdminButtons" variant="dark" disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.foldAndEndRound}>FoldEnd</Button> : null}
                 {(!_.isUndefined(this.props.isHost) && this.props.isHost === true) ?
-                    <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.shuffleRound}>Shuffle</button> : null}
-                {(!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 2 && this.props.gameStatus.playersInRound.includes(this.state.username) && this.state.userFolded === false) ?
-                    <button disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.show}>Show</button> : null}
+                    <Button className="AdminButtons" variant="dark" disabled={!(!_.isUndefined(this.props.userInfo) && this.props.userInfo.isYourTurn) && this.state.userFolded === false} onClick={this.shuffleRound}>Shuffle</Button> : null}
                 {(!_.isUndefined(this.props.isHost) && this.props.isHost === true) ?
-                    <button onClick={this.endGame}>End Game</button> : null}
+                    <Button className="AdminButtons" variant="dark"onClick={this.endGame}>End Game</Button> : null}
+                </ButtonGroup>
             </div>
         );
     }
@@ -260,10 +273,9 @@ export default connect(mapStateToProps)(Game)
 
 const OtherUser = ({ name, hasSeen, hasFolded, amount, yourTurn }) => {
     return (
-        <div>
-            <h3 style={yourTurn === true ? { color: 'green' } : null}>{name}{hasSeen === true ? '👀' : '😎'}</h3>
+        <div xs={10} sm={6} md={4} lg={3} xl={3}>
+            <h3 style={yourTurn === true ? { color: 'green' } : null}>{name}{hasSeen === true ? '👀' : '😎'}{hasFolded === true ? '🚫' : '🃏'}</h3>
             <h6>
-                {hasFolded === true ? 'Folded' : 'Playing'}
                 {amount}
             </h6>
         </div>
@@ -271,10 +283,9 @@ const OtherUser = ({ name, hasSeen, hasFolded, amount, yourTurn }) => {
 };
 const Player = ({ name, hasSeen, hasFolded, amount, yourTurn }) => {
     return (
-        <div>
-            <h3 style={yourTurn === true ? { color: 'green' } : null}>{name}{hasSeen === true ? '👀' : '😎'}</h3>
+        <div xs={12} sm={12} md={12} lg={12} xl={12}>
+            <h3 style={yourTurn === true ? { color: 'green' } : null}>{name}{hasSeen === true ? '👀' : '😎'}{hasFolded === true ? '🚫' : '🃏'}</h3>
             <h6>
-                {hasFolded === true ? 'Folded' : 'Playing'}
                 {amount}
             </h6>
         </div>
