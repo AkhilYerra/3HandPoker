@@ -5,6 +5,7 @@ import {connect} from 'react-redux'
 import _ from 'lodash'
 import Pusher from 'pusher-js';
 import {fetchStartGame, populatePlayers} from './waitingListService'
+import {ListGroup, ListGroupItem, Button} from 'react-bootstrap'
 
 var pusher = new Pusher('4edf52a5d834ee8fe586', {
   cluster: 'us2',
@@ -78,8 +79,10 @@ class WaitingList extends React.Component {
             
             <div className='RegisterScreen'>
             <h3>{this.state.isHost===true? 'Once Ready Please Start Game' : 'Please Wait For Host to Start the Game'}</h3>
+            <ListGroup>
             <Name nameOfUser={namesList}></Name>
-            {(!_.isUndefined(this.state.isHost) && this.state.isHost === true) ? <button onClick={this.startGameOnClick}>Start Game</button> : null}
+            </ListGroup>
+            {(!_.isUndefined(this.state.isHost) && this.state.isHost === true) ? <Button className="submitButton" variant="success" onClick={this.startGameOnClick}>Start Game</Button> : null}
             </div>
         );
     }
@@ -100,8 +103,8 @@ export default connect(mapStateToProps)(WaitingList)
 
 const Name = ({ nameOfUser}) => {
     return (
-      <div>
-          <h3>{nameOfUser}</h3>
-      </div>
+      <ListGroupItem>
+          {nameOfUser}
+      </ListGroupItem>
     );
   };
