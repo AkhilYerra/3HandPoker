@@ -75,8 +75,8 @@ class Home extends React.Component {
                     <option value="false">Choose Your Own Name</option>
                     <option value="true">Host</option>
                 </select>
-                {(this.state.isHost || this.props.isHost)? <input id='buyInAmountInput' type='number' onChange={this.handleAmountChange} value={this.state.username} placeholder="5"></input>
-                : <input id='userNameInput' onChange={this.handleChange} value={this.state.username} placeholder="Akhil"></input>}
+                {(this.state.isHost || this.props.isHost)? <input id='buyInAmountInput' type='number' onChange={this.handleAmountChange} value={this.state.username} placeholder="Enter In Buy In Amount"></input>
+                : <input id='userNameInput' onChange={this.handleChange} value={this.state.username} placeholder="Enter in Name"></input>}
                 {(this.state.isHost || this.props.isHost)? <Button variant="success" className="submitButton" onClick={this.enteredBuyInAmount}>Submit Amount</Button>
                 : <Button variant="success" className="submitButton" onClick={this.enteredUserName}>Submit</Button>}
                 

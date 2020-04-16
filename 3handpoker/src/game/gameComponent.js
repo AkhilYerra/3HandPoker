@@ -6,6 +6,9 @@ import { fetchAllPlayers, shuffle, fetchMakeMove, payWinner, determineWinner, ge
 import Pusher from 'pusher-js';
 import _ from 'lodash'
 import { Modal, Button, ButtonGroup} from 'react-bootstrap';
+import ReactNotification from 'react-notifications-component';
+import { store } from 'react-notifications-component';
+import 'react-notifications-component/dist/theme.css'
 import './gameComponent.css';
 
 var pusher = new Pusher('4edf52a5d834ee8fe586', {
@@ -157,6 +160,116 @@ class Game extends React.Component {
 
     }
 
+    returnSuite = (suite) =>{
+        if(_.toUpper(suite) === 'SPADE'){
+            return '♠️'
+        }
+        if(_.toUpper(suite) === 'DIAMOND'){
+            return '♦️'
+        }
+        if(_.toUpper(suite) === 'CLOVER'){
+            return '♣️'
+        }
+        if(_.toUpper(suite) === 'HEART'){
+            return '♥️'
+        }
+    }
+    returnfaceValue = (number) =>{
+        let faceValue = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        return faceValue[number -1];
+    }
+    componentDidUpdate(prevProps) {
+        if (this.props.consultDetails !== prevProps.consultDetails){
+            if(!_.isUndefined(this.props.consultDetails) && this.props.consultDetails.consultant !== this.state.username && this.props.consultDetails.consulter !== this.state.username){
+                console.log("IN FIRST LOOP")
+                store.addNotification({
+                    title: `Consult`,
+                    message: `${this.props.consultDetails.consulter} consulted ${this.props.consultDetails.consultant} and ${this.props.consultDetails.consultWinner} has won.`,
+                    type: "default",
+                    insert: "top",
+                    container: "top-right",
+                    animationIn: ["animated", "fadeIn"],
+                    animationOut: ["animated", "fadeOut"],
+                  });
+            }
+            if(!_.isUndefined(this.props.consultDetails) && this.props.consultDetails.consultant === this.state.username){
+                console.log("IN SECOND LOOP")
+                let notificationType = 'danger';
+                let message = `${this.props.consultDetails.consulter} had a ${this.props.consultDetails.firstPersonDetails.hand} which is BETTER than what you have and therefore you automatically drop.`;
+
+                if(this.state.username === this.props.consultDetails.consultWinner){
+                    notificationType = 'success'
+                    message = `${this.props.consultDetails.consulter} had a ${this.props.consultDetails.firstPersonDetails.hand} which is WORSE than what you have and therefore ${this.props.consultDetails.consulter} automatically drops.`
+                }
+                store.addNotification({
+                    title: `Consult`,
+                    message: message,
+                    type: notificationType,
+                    insert: "top",
+                    container: "top-right",
+                    animationIn: ["animated", "fadeIn"],
+                    animationOut: ["animated", "fadeOut"],
+                  });
+            }
+            if(!_.isUndefined(this.props.consultDetails) && this.props.consultDetails.consulter === this.state.username){
+                console.log("IN THIRD LOOP")
+                let notificationType = 'danger';
+                let message = `${this.props.consultDetails.consultant} had a ${this.props.consultDetails.secondPersonDetails.hand}. So you automatically drop.`;
+
+                if(this.state.username === this.props.consultDetails.consultWinner){
+                    notificationType = 'success'
+                    message = `You have a better hand than ${this.props.consultDetails.consultant} so therefore ${this.props.consultDetails.consultant} automatically drops.`
+                }
+                store.addNotification({
+                    title: `Consult`,
+                    message: message,
+                    type: notificationType,
+                    insert: "top",
+                    container: "top-right",
+                    animationIn: ["animated", "fadeIn"],
+                    animationOut: ["animated", "fadeOut"],
+                  });
+            }
+        }
+
+        if(this.props.winnerDetails !== prevProps.winnerDetails){
+            store.addNotification({
+                title: `Winner`,
+                message: `${this.props.winnerDetails.winner} won!. \n ${this.props.winnerDetails.firstPersonDetails.username} had a ${this.props.winnerDetails.firstPersonDetails.hand}
+                ${this.returnSuite(this.props.winnerDetails.firstPersonDetails.cards[0].suite)}${this.returnfaceValue(this.props.winnerDetails.firstPersonDetails.cards[0].value)},
+                ${this.returnSuite(this.props.winnerDetails.firstPersonDetails.cards[1].suite)}${this.returnfaceValue(this.props.winnerDetails.firstPersonDetails.cards[1].value)},
+                ${this.returnSuite(this.props.winnerDetails.firstPersonDetails.cards[2].suite)}${this.returnfaceValue(this.props.winnerDetails.firstPersonDetails.cards[2].value)}\n
+                \n ${this.props.winnerDetails.secondPersonDetails.username} had a ${this.props.winnerDetails.secondPersonDetails.hand}
+                ${this.returnSuite(this.props.winnerDetails.secondPersonDetails.cards[0].suite)}${this.returnfaceValue(this.props.winnerDetails.secondPersonDetails.cards[0].value)},
+                ${this.returnSuite(this.props.winnerDetails.secondPersonDetails.cards[1].suite)}${this.returnfaceValue(this.props.winnerDetails.secondPersonDetails.cards[1].value)},
+                ${this.returnSuite(this.props.winnerDetails.secondPersonDetails.cards[2].suite)}${this.returnfaceValue(this.props.winnerDetails.secondPersonDetails.cards[2].value)}\n
+                `,
+                type: "info",
+                insert: "top",
+                container: "top-right",
+                animationIn: ["animated", "fadeIn"],
+                animationOut: ["animated", "fadeOut"],
+              });
+        }
+
+        if(!_.isUndefined(this.props.gameStatus) && !_.isUndefined(prevProps.gameStatus)){
+            if(this.props.gameStatus.playersRemaining !== prevProps.gameStatus.playersRemaining){
+                if(this.props.gameStatus.playersRemaining === 1 && this.props.gameStatus.playersInRound.length === 1){
+                    store.addNotification({
+                        title: `Winner`,
+                        message: `${this.props.gameStatus.playersInRound[0]} has won!`,
+                        type: "info",
+                        insert: "top",
+                        container: "top-right",
+                        animationIn: ["animated", "fadeIn"],
+                        animationOut: ["animated", "fadeOut"],
+                      });
+                }
+
+            }
+        }
+    }
+
     render() {
         if (!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.gameEnded === true) {
             return <Redirect to={{
@@ -182,12 +295,8 @@ class Game extends React.Component {
         }
         return (
             <div className='Game Screen'>
+                <ReactNotification />
                 <h6>Pot : </h6>{(!_.isUndefined(this.props.potAmount)) ? this.props.potAmount : null}
-                {!_.isUndefined(this.props.winnerDetails) && this.props.gameStatus.hasWinner === true ? <Winner key={`${this.state.username}${this.props.gameStatus.winner}`} winnerDetails={this.props.winnerDetails}></Winner> : null}
-                {!_.isUndefined(this.props.consultDetails) && this.props.gameStatus.consultInProgress === true && this.props.consultDetails.consultant !== this.state.username && this.props.consultDetails.consultant !== this.state.username ? <h3>{this.props.consultDetails.consulter} consulted {this.props.consultDetails.consultant} and {this.props.consultDetails.consultWinner} has won.</h3> : null}
-                {!_.isUndefined(this.props.consultDetails) && this.props.gameStatus.consultInProgress === true && this.props.consultDetails.consultant === this.state.username ? <ConsultantDetails key={`Consultant${this.state.username}`} consultDetails={this.props.consultDetails} username={this.state.username}></ConsultantDetails> : null}
-                {!_.isUndefined(this.props.consultDetails) && this.props.gameStatus.consultInProgress === true && this.props.consultDetails.consulter === this.state.username ? <ConsulterDetails key={`Consulter${this.state.username}`} consultDetails={this.props.consultDetails} username={this.state.username}></ConsulterDetails> : null}
-                {(!_.isUndefined(this.props.gameStatus) && this.props.gameStatus.playersRemaining == 1) ? <h6>{this.props.gameStatus.playersInRound[0]} has Won!</h6> : null}
                 <div>
                 {otherPlayer}
                 </div>
@@ -358,7 +467,7 @@ const ConsulterDetails = ({ consultDetails, username }) => {
             <div>
                 {winnerOfConsult === true ?
                     `You Won the Consult against ${consultDetails.consultant}` :
-                    `${consultDetails.consultant} had a ${consultDetails.secondPersonDetails.hand} which is WORSE than what you have and therefore ${consultDetails.consultant} automatically drops.`}
+                    `${consultDetails.consultant} had a ${consultDetails.secondPersonDetails.hand} which is BETTER than what you have and therefore ${consultDetails.consulter} automatically drops.`}
          </div>
     )
 }

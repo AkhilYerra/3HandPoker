@@ -1,7 +1,9 @@
 import { getAllPlayers, updateGameStatus, payPlayer, getWinner, setHasWon, getConsult } from './gameActions'
 import _ from 'lodash'
+import { store } from 'react-notifications-component';
 import { googleCloudURL } from '../common/constants'
 const constant = require('../common/constants')
+
 
 
 export function fetchAllPlayers(isHost, username, pusher) {
